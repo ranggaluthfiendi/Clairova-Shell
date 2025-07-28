@@ -4,7 +4,7 @@ import Quickshell.Io
 
 Item {
     id: activeAppLogic
-    property string app: "Rang"
+    property string app: "Clairova"
 
     Process {
         id: appProc
@@ -15,12 +15,12 @@ Item {
             onStreamFinished: {
                 try {
                     let json = JSON.parse(this.text);
-                    let appName = json.initialTitle || json.initialClass || json.class || "Rang";
+                    let appName = json.initialTitle || json.initialClass || json.class || "Clairova";
                     let title = json.title || "";
                     let cleanedTitle = title.replace(new RegExp("\\s*-?\\s*" + appName + "\\s*$", "i"), "").trim();
                     activeAppLogic.app = cleanedTitle ? appName + " | " + cleanedTitle : appName;
                 } catch (e) {
-                    activeAppLogic.app = "Rang";
+                    activeAppLogic.app = "Clairova";
                 }
             }
         }

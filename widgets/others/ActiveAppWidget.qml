@@ -11,7 +11,7 @@ Item {
     implicitHeight: 32 * Appearance.scaleFactor
     clip: true
 
-    property string activeApp: "Rang"
+    property string activeApp: "Clairova"
     property string icon: "arrow_right" 
 
     ActiveApp {
