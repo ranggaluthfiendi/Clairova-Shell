@@ -1,0 +1,24 @@
+# settings
+1. Add Scale
+2. Add Color slider
+3. Change Wallpaper
+4. Toggle Transparent responsive as Color
+5. Change name
+6. Change icon
+7. Change font
+
+# bar
+1. Change battery icon
+2. ~~~
+
+# dock
+1. Create dock app
+
+# power menu
+1. Create power menu
+
+# lock screen
+1. Create lock screen
+
+# make installation
+1. For Arch user
