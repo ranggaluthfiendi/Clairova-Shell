@@ -1,3 +1,4 @@
+// AccentWidget.qml
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -7,26 +8,25 @@ import qs.config
 import qs.utils
 
 ColumnLayout {
-    id: secondarySlider
+    id: accentSlider
     width: parent.width
     spacing: 6 * Appearance.scaleFactor
 
     property bool thumbVisible: false
-    property real lastAppliedHue: secondary.hexToHue(secondary.currentColor)
+    property real lastAppliedHue: accent.hexToHue(accent.currentColor)
     property bool isModified: false
     property bool expanded: false
 
-    SecondaryUtil { id: secondary }
+    AccentUtil { id: accent }
     PasteUtil {
         id: pasteUtil
         onValidHexColor: (hex, rgba) => {
-            Appearance.background = rgba
-            hueSlider.value = secondary.hexToHue(hex)
+            Appearance.white = rgba
+            hueSlider.value = accent.hexToHue(hex)
             thumbVisible = true
-            isModified = (hex !== secondary.defaultColor.toLowerCase())
+            isModified = (hex !== accent.defaultColor.toLowerCase())
         }
     }
-
 
     RowLayout {
         spacing: 12 * Appearance.scaleFactor
@@ -34,7 +34,7 @@ ColumnLayout {
         Layout.margins: 8 * Appearance.scaleFactor
 
         Label {
-            text: "Secondary"
+            text: "Accent"
             font.pixelSize: 14 * Appearance.scaleFactor
             color: Appearance.white
             font.family: Appearance.defaultFont
@@ -44,7 +44,7 @@ ColumnLayout {
             width: 14 * Appearance.scaleFactor
             height: 14 * Appearance.scaleFactor
             radius: 3 * Appearance.scaleFactor
-            color: Appearance.background
+            color: Appearance.white
             border.color: "white"
             border.width: 1
             antialiasing: true
@@ -99,8 +99,8 @@ ColumnLayout {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    secondary.resetColor()
-                    hueSlider.value = secondary.hexToHue(secondary.defaultColor)
+                    accent.resetColor()
+                    hueSlider.value = accent.hexToHue(accent.defaultColor)
                     lastAppliedHue = hueSlider.value
                     isModified = false
                     thumbVisible = false
@@ -131,11 +131,11 @@ ColumnLayout {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    const hex = secondary.colorToHex(Appearance.background)
-                    secondary.applyColor(hex)
-                    const currentHue = secondary.hexToHue(hex)
+                    const hex = accent.colorToHex(Appearance.white)
+                    accent.applyColor(hex)
+                    const currentHue = accent.hexToHue(hex)
                     lastAppliedHue = currentHue
-                    isModified = (hex.toLowerCase() !== secondary.defaultColor.toLowerCase())
+                    isModified = (hex.toLowerCase() !== accent.defaultColor.toLowerCase())
                     thumbVisible = isModified
                     expanded = false
                 }
@@ -196,13 +196,13 @@ ColumnLayout {
             x: hueSlider.visualPosition * (sliderArea.width - width)
             visible: thumbVisible
             color: "white"
-            border.color: Appearance.background
+            border.color: Appearance.white
             border.width: 2
             z: 2
 
             layer.enabled: true
             layer.effect: DropShadow {
-                color: Appearance.background
+                color: Appearance.white
                 radius: 10 * Appearance.scaleFactor
                 samples: 30
                 horizontalOffset: 0
@@ -234,10 +234,10 @@ ColumnLayout {
                 handle: null
 
                 onMoved: {
-                    const hex = secondary.hueToHex(value)
-                    Appearance.background = Qt.color(hex)
+                    const hex = accent.hueToHex(value)
+                    Appearance.white = Qt.color(hex)
                     thumbVisible = true
-                    isModified = (hex.toLowerCase() !== secondary.defaultColor.toLowerCase())
+                    isModified = (hex.toLowerCase() !== accent.defaultColor.toLowerCase())
                 }
             }
         }
@@ -251,9 +251,9 @@ ColumnLayout {
 
         Text {
             id: colorText
-            text: secondary.colorToHex(Appearance.background)
+            text: accent.colorToHex(Appearance.white)
             font.pixelSize: 14 * Appearance.scaleFactor
-            color: Appearance.background
+            color: Appearance.white
             font.family: Appearance.defaultFont
         }
 
@@ -311,21 +311,20 @@ ColumnLayout {
         }
     }
 
-
     Connections {
-        target: secondary
+        target: accent
         onColorLoaded: (hexColor) => {
-            hueSlider.value = secondary.hexToHue(hexColor)
+            hueSlider.value = accent.hexToHue(hexColor)
             lastAppliedHue = hueSlider.value
-            isModified = (hexColor.toLowerCase() !== secondary.defaultColor.toLowerCase())
+            isModified = (hexColor.toLowerCase() !== accent.defaultColor.toLowerCase())
             thumbVisible = isModified
         }
     }
 
     Component.onCompleted: {
-        hueSlider.value = secondary.hexToHue(secondary.currentColor)
+        hueSlider.value = accent.hexToHue(accent.currentColor)
         lastAppliedHue = hueSlider.value
-        isModified = (secondary.currentColor.toLowerCase() !== secondary.defaultColor.toLowerCase())
+        isModified = (accent.currentColor.toLowerCase() !== accent.defaultColor.toLowerCase())
         thumbVisible = isModified
     }
 }

@@ -20,13 +20,23 @@ Singleton {
 
     // Color
     property color background: "#2E2C30"
-    readonly property color danger: "#de1c1c"
-    readonly property color color: "#1F1F1F"
-    readonly property color white: "#cacaca"
+    property color color: "#1F1F1F"
+    property color white: "#cacaca"
     property color primary: "#a6eeb9"
 
-    readonly property color background2: Qt.rgba(0.18, 0.17, 0.19, 0.5)
-    readonly property color color2: Qt.rgba(0.12, 0.12, 0.12, 0.5)
+    readonly property color background2: Qt.rgba(
+        Qt.colorEqual(background, "transparent") ? 0 : Qt.darker(background).r,
+        background.g,
+        background.b,
+        0.5
+    )
+    readonly property color color2: Qt.rgba(
+        color.r,
+        color.g,
+        color.b,
+        0.5
+    )
+
 
     // Toggle state (new!)
     property bool useTransparent: false

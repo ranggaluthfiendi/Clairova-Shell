@@ -1,8 +1,8 @@
 # settings
 1. Add Scale
-2. Add Color slider
-3. Change Wallpaper
-4. Toggle Transparent responsive as Color
+2. Add Color slider (Done)
+3. Change Wallpaper 
+4. Toggle Transparent responsive as Color (Done)
 5. Change name
 6. Change icon
 7. Change font

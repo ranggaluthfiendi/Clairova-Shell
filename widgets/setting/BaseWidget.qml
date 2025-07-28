@@ -1,3 +1,4 @@
+// BaseWidget.qml
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -7,26 +8,26 @@ import qs.config
 import qs.utils
 
 ColumnLayout {
-    id: secondarySlider
+    id: baseSlider
     width: parent.width
     spacing: 6 * Appearance.scaleFactor
 
     property bool thumbVisible: false
-    property real lastAppliedHue: secondary.hexToHue(secondary.currentColor)
+    property real lastAppliedHue: base.hexToHue(base.currentColor)
     property bool isModified: false
     property bool expanded: false
 
-    SecondaryUtil { id: secondary }
+    BaseUtil { id: base }
+
     PasteUtil {
         id: pasteUtil
         onValidHexColor: (hex, rgba) => {
-            Appearance.background = rgba
-            hueSlider.value = secondary.hexToHue(hex)
+            Appearance.color = rgba
+            hueSlider.value = base.hexToHue(hex)
             thumbVisible = true
-            isModified = (hex !== secondary.defaultColor.toLowerCase())
+            isModified = (hex !== base.defaultColor.toLowerCase())
         }
     }
-
 
     RowLayout {
         spacing: 12 * Appearance.scaleFactor
@@ -34,7 +35,7 @@ ColumnLayout {
         Layout.margins: 8 * Appearance.scaleFactor
 
         Label {
-            text: "Secondary"
+            text: "Base"
             font.pixelSize: 14 * Appearance.scaleFactor
             color: Appearance.white
             font.family: Appearance.defaultFont
@@ -44,7 +45,7 @@ ColumnLayout {
             width: 14 * Appearance.scaleFactor
             height: 14 * Appearance.scaleFactor
             radius: 3 * Appearance.scaleFactor
-            color: Appearance.background
+            color: Appearance.color
             border.color: "white"
             border.width: 1
             antialiasing: true
@@ -99,8 +100,8 @@ ColumnLayout {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    secondary.resetColor()
-                    hueSlider.value = secondary.hexToHue(secondary.defaultColor)
+                    base.resetColor()
+                    hueSlider.value = base.hexToHue(base.defaultColor)
                     lastAppliedHue = hueSlider.value
                     isModified = false
                     thumbVisible = false
@@ -131,11 +132,11 @@ ColumnLayout {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    const hex = secondary.colorToHex(Appearance.background)
-                    secondary.applyColor(hex)
-                    const currentHue = secondary.hexToHue(hex)
+                    const hex = base.colorToHex(Appearance.color)
+                    base.applyColor(hex)
+                    const currentHue = base.hexToHue(hex)
                     lastAppliedHue = currentHue
-                    isModified = (hex.toLowerCase() !== secondary.defaultColor.toLowerCase())
+                    isModified = (hex.toLowerCase() !== base.defaultColor.toLowerCase())
                     thumbVisible = isModified
                     expanded = false
                 }
@@ -196,13 +197,13 @@ ColumnLayout {
             x: hueSlider.visualPosition * (sliderArea.width - width)
             visible: thumbVisible
             color: "white"
-            border.color: Appearance.background
+            border.color: Appearance.color
             border.width: 2
             z: 2
 
             layer.enabled: true
             layer.effect: DropShadow {
-                color: Appearance.background
+                color: Appearance.color
                 radius: 10 * Appearance.scaleFactor
                 samples: 30
                 horizontalOffset: 0
@@ -234,10 +235,10 @@ ColumnLayout {
                 handle: null
 
                 onMoved: {
-                    const hex = secondary.hueToHex(value)
-                    Appearance.background = Qt.color(hex)
+                    const hex = base.hueToHex(value)
+                    Appearance.color = Qt.color(hex)
                     thumbVisible = true
-                    isModified = (hex.toLowerCase() !== secondary.defaultColor.toLowerCase())
+                    isModified = (hex.toLowerCase() !== base.defaultColor.toLowerCase())
                 }
             }
         }
@@ -251,9 +252,13 @@ ColumnLayout {
 
         Text {
             id: colorText
-            text: secondary.colorToHex(Appearance.background)
+            text: base.colorToHex(Appearance.color)
             font.pixelSize: 14 * Appearance.scaleFactor
-            color: Appearance.background
+            color: {
+                const c = Qt.colorEqual(Appearance.color, "transparent") ? Qt.rgba(0, 0, 0, 1) : Appearance.color
+                const luminance = (0.299 * c.r + 0.587 * c.g + 0.114 * c.b)
+                return luminance > 0.5 ? "black" : "white"
+            }
             font.family: Appearance.defaultFont
         }
 
@@ -290,9 +295,7 @@ ColumnLayout {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    pasteUtil.paste()
-                }
+                onClicked: pasteUtil.paste()
             }
 
             Text {
@@ -311,21 +314,20 @@ ColumnLayout {
         }
     }
 
-
     Connections {
-        target: secondary
+        target: base
         onColorLoaded: (hexColor) => {
-            hueSlider.value = secondary.hexToHue(hexColor)
+            hueSlider.value = base.hexToHue(hexColor)
             lastAppliedHue = hueSlider.value
-            isModified = (hexColor.toLowerCase() !== secondary.defaultColor.toLowerCase())
+            isModified = (hexColor.toLowerCase() !== base.defaultColor.toLowerCase())
             thumbVisible = isModified
         }
     }
 
     Component.onCompleted: {
-        hueSlider.value = secondary.hexToHue(secondary.currentColor)
+        hueSlider.value = base.hexToHue(base.currentColor)
         lastAppliedHue = hueSlider.value
-        isModified = (secondary.currentColor.toLowerCase() !== secondary.defaultColor.toLowerCase())
+        isModified = (base.currentColor.toLowerCase() !== base.defaultColor.toLowerCase())
         thumbVisible = isModified
     }
 }

@@ -1,3 +1,4 @@
+// BaseUtil.qml
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -7,10 +8,10 @@ import qs.config
 Item {
     id: util
 
-    readonly property string jsonPath: StandardPaths.writableLocation(StandardPaths.ConfigLocation).toString().replace(/^file:\/\//, "") + "/quickshell/savedata/background-color.json"
+    readonly property string jsonPath: StandardPaths.writableLocation(StandardPaths.ConfigLocation).toString().replace(/^file:\/\//, "") + "/quickshell/savedata/base-color.json"
 
-    property string currentColor: "#2E2C30"
-    property string defaultColor: "#2E2C30"
+    property string currentColor: "#1F1F1F"
+    property string defaultColor: "#1F1F1F"
 
     signal colorLoaded(string color)
 
@@ -30,11 +31,11 @@ Item {
                     const parsed = JSON.parse(this.text)
                     const loaded = (typeof parsed.color === "string") ? parsed.color.toLowerCase() : defaultColor
                     util.currentColor = loaded
-                    Appearance.background = Qt.color(loaded)
+                    Appearance.color = Qt.color(loaded)
                     util.colorLoaded(loaded)
                 } catch (e) {
                     util.currentColor = defaultColor
-                    Appearance.background = Qt.color(defaultColor)
+                    Appearance.color = Qt.color(defaultColor)
                     util.colorLoaded(defaultColor)
                 }
             }
@@ -49,7 +50,7 @@ Item {
     function applyColor(colorStr) {
         const hex = colorStr.toLowerCase()
         currentColor = hex
-        Appearance.background = Qt.color(hex)
+        Appearance.color = Qt.color(hex)
         Qt.callLater(() => {
             saveColor(hex)
             colorLoaded(hex)

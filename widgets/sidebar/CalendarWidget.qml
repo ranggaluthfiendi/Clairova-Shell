@@ -26,6 +26,15 @@ Item {
     property alias daysInMonth: calendarUtil.daysInMonth
     property alias isCurrentMonth: calendarUtil.isCurrentMonth
 
+    function darkenWhite() {
+        return Qt.rgba(
+            Math.max(0, Appearance.white.r * 0.6),
+            Math.max(0, Appearance.white.g * 0.6),
+            Math.max(0, Appearance.white.b * 0.6),
+            1
+        )
+    }
+
     ColumnLayout {
         id: contentLayout
         anchors.fill: parent
@@ -62,7 +71,7 @@ Item {
                         text: calendarWidget.currentYear
                         font.family: Appearance.defaultFont
                         font.pixelSize: 18 * Appearance.scaleFactor
-                        color: "#8d8d8d"
+                        color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.5)
                     }
                 }
             }
@@ -82,7 +91,7 @@ Item {
                         text: "cancel"
                         font.family: Appearance.materialSymbols
                         font.pixelSize: 10 * Appearance.scaleFactor
-                        color: "#ff5555"
+                        color: Appearance.primary
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHCenter
                     }
@@ -90,7 +99,7 @@ Item {
                     Text {
                         text: "Delete all Mark"
                         font.pixelSize: 8 * Appearance.scaleFactor
-                        color: "#ff5555"
+                        color: Appearance.primary
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignLeft
                     }
@@ -186,11 +195,11 @@ Item {
                         if (isMarked) return markedColor
                         if (isCurrent && calendarUtil.selectedStartDay !== -1 && day >= calendarUtil.selectedStartDay && day <= calendarUtil.selectedEndDay)
                             return "#2A2A2A"
-                        if (isToday) return Appearance.primary
+                        if (isToday) return Qt.rgba(Appearance.primary.r, Appearance.primary.g, Appearance.primary.b, 0.6)
                         return "transparent"
                     }
 
-                    property color markedColor: "#772222"
+                    property color markedColor: Qt.rgba(Appearance.primary.r, Appearance.primary.g, Appearance.primary.b, 0.2)
 
                     Text {
                         anchors.centerIn: parent
@@ -198,10 +207,10 @@ Item {
                         font.family: Appearance.bitcountFont
                         font.pixelSize: 14 * Appearance.scaleFactor
                         color: {
-                            if (!isCurrent) return "#777"
-                            if (isToday && isMarked) return "#fff" 
-                            if (isToday) return "#000"
-                            return "#fff"
+                            if (!isCurrent) return Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.4) 
+                            if (isToday && isMarked) return Appearance.white
+                            if (isToday) return Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 1) 
+                            return Appearance.white
                         }
                     }
 

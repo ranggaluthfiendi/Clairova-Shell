@@ -89,6 +89,8 @@ PopupWindow {
 
                     PrimaryWidget {}
                     SecondaryWidget{}
+                    BaseWidget{}
+                    AccentWidget{}
                 }
             }
         }

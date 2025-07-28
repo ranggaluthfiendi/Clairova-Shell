@@ -70,16 +70,14 @@ Item {
                         text: "Clear"
                         font.family: Appearance.defaultFont
                         font.pixelSize: 14 * Appearance.scaleFactor
-                        color: Appearance.danger
-                        verticalAlignment: Text.AlignVCenter
+                        color: Appearance.white
                     }
 
                     Text {
                         text: "clear_all"
                         font.pixelSize: 14 * Appearance.scaleFactor
                         font.family: Appearance.materialSymbols
-                        color: Appearance.danger
-                        verticalAlignment: Text.AlignVCenter
+                        color: Appearance.white
                     }
 
                     MouseArea {
@@ -151,7 +149,7 @@ Item {
                                 text: modelData.summary
                                 font.pixelSize: 16 * Appearance.scaleFactor
                                 font.bold: true
-                                color: "#fff"
+                                color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 1)
                                 Layout.fillWidth: true
                                 elide: Text.ElideRight
                                 maximumLineCount: 1
@@ -162,7 +160,7 @@ Item {
                         Text {
                             text: modelData.body
                             font.pixelSize: 16 * Appearance.scaleFactor
-                            color: "#aaa"
+                            color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.6)
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                             maximumLineCount: 2
@@ -172,7 +170,7 @@ Item {
                         Text {
                             text: formatTimestamp(modelData.time) + modelData.appName
                             font.pixelSize: 8 * Appearance.scaleFactor
-                            color: "#aaa"
+                            color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.6)
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                             maximumLineCount: 2

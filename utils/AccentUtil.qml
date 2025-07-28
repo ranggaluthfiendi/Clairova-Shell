@@ -7,10 +7,10 @@ import qs.config
 Item {
     id: util
 
-    readonly property string jsonPath: StandardPaths.writableLocation(StandardPaths.ConfigLocation).toString().replace(/^file:\/\//, "") + "/quickshell/savedata/background-color.json"
+    readonly property string jsonPath: StandardPaths.writableLocation(StandardPaths.ConfigLocation).toString().replace(/^file:\/\//, "") + "/quickshell/savedata/white-color.json"
 
-    property string currentColor: "#2E2C30"
-    property string defaultColor: "#2E2C30"
+    property string currentColor: "#cacaca"  // default Appearance.white
+    property string defaultColor: "#cacaca"
 
     signal colorLoaded(string color)
 
@@ -30,11 +30,11 @@ Item {
                     const parsed = JSON.parse(this.text)
                     const loaded = (typeof parsed.color === "string") ? parsed.color.toLowerCase() : defaultColor
                     util.currentColor = loaded
-                    Appearance.background = Qt.color(loaded)
+                    Appearance.white = Qt.color(loaded)
                     util.colorLoaded(loaded)
                 } catch (e) {
                     util.currentColor = defaultColor
-                    Appearance.background = Qt.color(defaultColor)
+                    Appearance.white = Qt.color(defaultColor)
                     util.colorLoaded(defaultColor)
                 }
             }
@@ -49,7 +49,7 @@ Item {
     function applyColor(colorStr) {
         const hex = colorStr.toLowerCase()
         currentColor = hex
-        Appearance.background = Qt.color(hex)
+        Appearance.white = Qt.color(hex)
         Qt.callLater(() => {
             saveColor(hex)
             colorLoaded(hex)
