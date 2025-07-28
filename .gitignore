@@ -1,3 +1,5 @@
 .qmlls.ini
 savedata/*
 !savedata/.gitignore
+savedata/
+savedata/*.json
