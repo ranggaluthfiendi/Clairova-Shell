@@ -8,10 +8,10 @@
 7. Change font
 
 # volume
-1. Add all source and sink 
+1. Add all source and sink (Done)
 
 # bar
-1. Change battery icon
+1. Change battery icon (Done)
 2. ~~~
 
 # dock

@@ -40,13 +40,13 @@ Item {
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 6 * Appearance.scaleFactor
+            Layout.preferredHeight: 30 * Appearance.scaleFactor
+            spacing: 8 * Appearance.scaleFactor
 
             Item {
                 id: outputWrapper
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter
-                Layout.preferredHeight: outputMetrics.boundingRect.height
+                Layout.preferredHeight: 30 * Appearance.scaleFactor
                 clip: true
 
                 TextMetrics {
@@ -67,7 +67,8 @@ Item {
                     font.family: Appearance.defaultFont
                     color: Appearance.white
                     elide: Text.ElideRight
-                    anchors.verticalCenter: parent.verticalCenter
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.fill: parent
                 }
 
                 Item {
@@ -108,30 +109,43 @@ Item {
                 }
             }
 
-            Label {
-                text: (!node || !node.audio) ? "0%" : (node.audio.muted ? "0%" : Math.floor(node.audio.volume * 100) + "%")
-                font.pixelSize: 14 * Appearance.scaleFactor
-                font.family: Appearance.defaultFont
-                color: Appearance.white
-            }
-
             Item {
-                Layout.preferredWidth: 30 * Appearance.scaleFactor
+                Layout.preferredWidth: 60 * Appearance.scaleFactor
                 Layout.preferredHeight: 30 * Appearance.scaleFactor
+                Layout.alignment: Qt.AlignRight
 
-                MouseArea {
+                RowLayout {
                     anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: Qt.AllButtons
-                    onClicked: if (node?.audio) node.audio.muted = !node.audio.muted
-                }
+                    spacing: 4 * Appearance.scaleFactor
 
-                Text {
-                    anchors.centerIn: parent
-                    text: (!node || !node.audio || node.audio.muted || node.audio.volume === 0) ? "volume_off" : "volume_up"
-                    font.family: Appearance.materialSymbols
-                    font.pixelSize: 14 * Appearance.scaleFactor
-                    color: Appearance.white
+                    Text {
+                        text: (!node || !node.audio) ? "0%" : (node.audio.muted ? "0%" : Math.floor(node.audio.volume * 100) + "%")
+                        font.pixelSize: 14 * Appearance.scaleFactor
+                        font.family: Appearance.defaultFont
+                        color: Appearance.white
+                        verticalAlignment: Text.AlignVCenter
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    Item {
+                        width: 30 * Appearance.scaleFactor
+                        height: 30 * Appearance.scaleFactor
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            acceptedButtons: Qt.AllButtons
+                            onClicked: if (node?.audio) node.audio.muted = !node.audio.muted
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: (!node || !node.audio || node.audio.muted || node.audio.volume === 0) ? "volume_off" : "volume_up"
+                            font.family: Appearance.materialSymbols
+                            font.pixelSize: 14 * Appearance.scaleFactor
+                            color: Appearance.white
+                        }
+                    }
                 }
             }
         }

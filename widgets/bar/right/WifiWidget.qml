@@ -18,7 +18,6 @@ Item {
     WifiUtils { id: wifiUtils }
 
     property int strength: wifiUtils.signalStrength ?? -2
-    property color baseColor: Appearance.color
     property bool toggled: false
 
     Process {

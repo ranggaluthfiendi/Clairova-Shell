@@ -93,7 +93,7 @@ Item {
             }
 
             ctx.closePath()
-            ctx.fillStyle = Appearance.primary
+            ctx.fillStyle =  Qt.rgba(Appearance.primary.r, Appearance.primary.g, Appearance.primary.b, 0.5)
             ctx.fill()
         }
 
@@ -125,9 +125,9 @@ Item {
         id: batteryText
         anchors.centerIn: parent
         text: isFull ? "Full" : batteryLevel + "%"
-        color: Appearance.color
+        color: Appearance.white
         font.family: Appearance.bitcountFont
-        font.pixelSize: 10 * Appearance.scaleFactor
+        font.pixelSize: 14 * Appearance.scaleFactor
         opacity: isFull ? blinkingOpacity : 1
     }
 
@@ -140,7 +140,7 @@ Item {
         }
         text: "electric_bolt"
         font.family: Appearance.materialSymbols
-        color: batteryLevel >= 90 ? Appearance.color : Appearance.white   
+        color:  Appearance.white
         font.pixelSize: 10 * Appearance.scaleFactor
         z: 2
     }

@@ -7,7 +7,8 @@ import qs.utils
 Item {
     id: transparentWidget
     width: parent.width
-    height: 60 * Appearance.scaleFactor
+    Layout.topMargin: 12 * Appearance.scaleFactor
+    height: 30 * Appearance.scaleFactor
 
     TransparentUtil {
         id: transparent

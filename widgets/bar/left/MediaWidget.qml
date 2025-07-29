@@ -246,7 +246,6 @@ Item {
                 }
             }
 
-            // Title & artist
             ColumnLayout {
                 spacing: 2 * scaleFactor
                 Layout.fillWidth: true
@@ -264,7 +263,6 @@ Item {
                     font.pixelSize: 9 * scaleFactor
                 }
 
-                // Title wrapper
                 Item {
                     id: titleWrapper
                     Layout.fillWidth: true
@@ -320,7 +318,6 @@ Item {
                     }
                 }
 
-                // Artist wrapper
                 Item {
                     id: artistWrapper
                     Layout.fillWidth: true
@@ -377,7 +374,6 @@ Item {
                 }
             }
 
-            // Control buttons
             RowLayout {
                 spacing: 6 * scaleFactor
                 Layout.alignment: Qt.AlignVCenter

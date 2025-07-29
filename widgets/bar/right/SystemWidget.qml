@@ -26,6 +26,7 @@ Rectangle {
         anchors.fill: parent
         anchors.rightMargin: 12 * Appearance.scaleFactor
         TimeWidget {}
+        VolumeWidget{}
         BluetoothWidget {}
         WifiWidget {}
         BatteryWidget {}
