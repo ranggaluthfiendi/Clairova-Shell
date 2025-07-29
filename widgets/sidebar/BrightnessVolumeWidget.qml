@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
+import Quickshell.Services.Pipewire
 import qs.config
 import Quickshell
 
@@ -13,9 +14,11 @@ Item {
     width: 200 * Appearance.scaleFactor
     height: 100 * Appearance.scaleFactor
 
-    VolumeUtil { id: volumeUtil }
     BrightnessUtil { id: brightnessUtil }
-    VolumeControl { id: volumeControl }
+
+    property PwNode node: Pipewire.defaultAudioSink;
+
+	PwObjectTracker { objects: [ node ] }
 
     ColumnLayout {
         anchors.fill: parent
@@ -49,7 +52,7 @@ Item {
 
                     Rectangle {
                         id: volumeFill
-                        width: (volumeUtil.muted ? 0 : volumeUtil.volume) * volumeBar.width
+                        width: (node.audio.muted ? 0 : node.audio.volume) * volumeBar.width
                         height: volumeBar.height
                         radius: 30 * Appearance.scaleFactor
                         color: Appearance.primary
@@ -114,12 +117,12 @@ Item {
 
                     onWheel: (wheel) => {
                         var delta = wheel.angleDelta.y > 0 ? 0.01 : -0.01
-                        volumeUtil.volume = Math.max(0, Math.min(1, volumeUtil.volume + delta))
+                        node.audio.volume = Math.max(0, Math.min(1, node.audio.volume + delta))
                     }
 
                     function update(mouseX) {
                         var ratio = Math.max(0, Math.min(1, mouseX / volumeBar.width))
-                        volumeUtil.volume = ratio
+                        node.audio.volume = ratio
                     }
                 }
             }
@@ -136,7 +139,7 @@ Item {
 
                     onClicked: (mouse) => {
                         if (mouse.button === Qt.LeftButton) {
-                            volumeUtil.muted = !volumeUtil.muted
+                            node.audio.muted = !node.audio.muted
                         } else if (mouse.button === Qt.RightButton) {
                             barWindow.toggleVolume()
                         }
@@ -145,7 +148,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: (volumeUtil.muted || volumeUtil.volume === 0) ? "volume_off" : "volume_up"
+                    text: (node.audio.muted || node.audio.volume === 0) ? "volume_off" : "volume_up"
                     font.family: Appearance.materialSymbols
                     font.pixelSize: Appearance.extraLarge * Appearance.scaleFactor
                     color: Appearance.white

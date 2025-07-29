@@ -15,6 +15,7 @@ PopupWindow {
 
     property real contentX: width
     property bool isAnimating: false
+    
 
     signal requestResetNotifToggled()
 
@@ -104,7 +105,7 @@ PopupWindow {
 
                     CalendarWidget {
                         Layout.topMargin: 140 * Appearance.scaleFactor
-                        Layout.bottomMargin: 10 * Appearance.scaleFactor
+                        Layout.bottomMargin: 20 * Appearance.scaleFactor
                         Layout.alignment: Qt.AlignHCenter
                         Layout.preferredWidth: parent.width - (35 * Appearance.scaleFactor)
                     }

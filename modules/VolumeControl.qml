@@ -6,6 +6,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Pipewire
 
 PopupWindow {
     id: volumePopup
@@ -36,6 +37,16 @@ PopupWindow {
         anim.start()
     }
 
+    PwNodeLinkTracker {
+        id: outputTracker
+        node: Pipewire.defaultAudioSink
+    }
+
+    PwNodeLinkTracker {
+        id: inputTracker
+        node: Pipewire.defaultAudioSource
+    }
+
     Item {
         id: wrapper
         width: parent.width
@@ -54,6 +65,10 @@ PopupWindow {
                 contentHeight: layout.implicitHeight + 32 * Appearance.scaleFactor
                 interactive: true
                 clip: true
+
+                ScrollBar.vertical: ScrollBar {
+                    policy: Qt.ScrollBarAsNeeded
+                }
 
                 ColumnLayout {
                     id: layout
@@ -82,7 +97,22 @@ PopupWindow {
                         }
                     }
 
-                    VolumeAllWidget{}
+                    MixerOutputWidget{
+                        node: Pipewire.defaultAudioSink
+                    }
+
+                    MixerInputWidget {
+                        node: Pipewire.defaultAudioSource
+                    }
+
+                    Repeater {
+                        model: outputTracker.linkGroups
+
+                        MixerOutputWidget {
+                            required property PwLinkGroup modelData
+                            node: modelData.source
+                        }
+                    }
                 }
             }
         }

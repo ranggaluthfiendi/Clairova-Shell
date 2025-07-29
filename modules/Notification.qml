@@ -72,9 +72,8 @@ PopupWindow {
                         backgroundColor: notifColor.color
                         Layout.fillWidth: true
                         Layout.topMargin: 10 * Appearance.scaleFactor
-                        Layout.bottomMargin: 20 * Appearance.scaleFactor
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: parent.width - (40 * Appearance.scaleFactor)
+                        Layout.preferredWidth: parent.width
 
                         onRequestNotifToggle: (forceClose) => {
                             if (forceClose) {

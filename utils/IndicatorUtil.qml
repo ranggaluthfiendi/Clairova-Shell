@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Pipewire
 
 Item {
     id: indicatorUtil
@@ -12,14 +13,26 @@ Item {
     property bool muted: false
     property int _lastVolume: -1
     property bool _lastMuted: false
-    property int _tempVolume: -1
-    property bool _tempMuted: false
-    property bool _volumeReady: false
-    property bool _muteReady: false
 
     property int brightness: -1
     property int _lastBrightness: -1
     property int _currentRawBrightness: -1
+
+    readonly property PwNode sink: Pipewire.defaultAudioSink
+
+    PwObjectTracker {
+        objects: [sink]
+    }
+
+    Connections {
+        target: sink?.audio
+        onVolumeChanged: {
+            maybeEmitVolume()
+        }
+        onMutedChanged: {
+            maybeEmitVolume()
+        }
+    }
 
     Timer {
         interval: 1500
@@ -27,55 +40,27 @@ Item {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            _volumeReady = false
-            _muteReady = false
-            getVolumeProc.running = true
-            getMuteProc.running = true
+            maybeEmitVolume()
             getBrightnessProc.running = true
         }
     }
 
-    Process {
-        id: getVolumeProc
-        command: ["pactl", "get-sink-volume", "@DEFAULT_SINK@"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const match = this.text.match(/(\d+)%/)
-                if (match) {
-                    _tempVolume = parseInt(match[1])
-                    _volumeReady = true
-                }
-                maybeEmitVolume()
-            }
-        }
-    }
-
-    Process {
-        id: getMuteProc
-        command: ["pactl", "get-sink-mute", "@DEFAULT_SINK@"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                _tempMuted = this.text.toLowerCase().includes("yes")
-                _muteReady = true
-                maybeEmitVolume()
-            }
-        }
-    }
-
     function maybeEmitVolume() {
-        if (_volumeReady && _muteReady) {
-            if (_tempVolume !== _lastVolume || _tempMuted !== _lastMuted) {
-                _lastVolume = _tempVolume
-                _lastMuted = _tempMuted
+        if (!sink || !sink.audio) return;
 
-                volume = _tempVolume
-                muted = _tempMuted
+        const newVol = Math.round(sink.audio.volume * 100)
+        const newMuted = sink.audio.muted
 
-                volumeUpdated(volume, muted)
-            }
+        if (newVol !== _lastVolume || newMuted !== _lastMuted) {
+            _lastVolume = newVol
+            _lastMuted = newMuted
+            volume = newVol
+            muted = newMuted
+            volumeUpdated(volume, muted)
         }
     }
 
+    // === BRIGHTNESS (JANGAN DIUBAH) ===
     Process {
         id: getBrightnessProc
         command: ["brightnessctl", "g"]

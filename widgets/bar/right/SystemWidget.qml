@@ -30,7 +30,7 @@ Rectangle {
         TimeWidget {}
         BluetoothWidget {}
         WifiWidget {}
-        BatteryWidget2 {}
+        BatteryWidget {}
     }
 
     MouseArea {

@@ -7,6 +7,9 @@
 6. Change icon
 7. Change font
 
+# volume
+1. Add all source and sink 
+
 # bar
 1. Change battery icon
 2. ~~~

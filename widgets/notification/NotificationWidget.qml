@@ -95,7 +95,8 @@ Item {
             id: notificationList
             model: notificationUtil.notifications
             Layout.fillWidth: true
-            Layout.preferredHeight: 320 * Appearance.scaleFactor
+            Layout.preferredHeight: 195 * Appearance.scaleFactor
+            
             spacing: 10 * Appearance.scaleFactor
             clip: true
             boundsBehavior: Flickable.DragAndOvershootBounds
@@ -145,26 +146,131 @@ Item {
                         RowLayout {
                             Layout.fillWidth: true
 
-                            Text {
-                                text: modelData.summary
-                                font.pixelSize: 16 * Appearance.scaleFactor
-                                font.bold: true
-                                color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 1)
+                            Item {
+                                id: summaryWrapper
                                 Layout.fillWidth: true
-                                elide: Text.ElideRight
-                                maximumLineCount: 1
-                                wrapMode: Text.NoWrap
+                                height: 18 * Appearance.scaleFactor
+                                clip: true
+
+                                TextMetrics {
+                                    id: summaryMetrics
+                                    text: modelData.summary
+                                    font.pixelSize: 16 * Appearance.scaleFactor
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    id: summaryText
+                                    visible: summaryMetrics.width <= summaryWrapper.width
+                                    text: modelData.summary
+                                    font.pixelSize: 16 * Appearance.scaleFactor
+                                    font.bold: true
+                                    color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 1)
+                                    elide: Text.ElideRight
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Item {
+                                    id: summaryMarquee
+                                    visible: summaryMetrics.width > summaryWrapper.width
+                                    anchors.fill: parent
+                                    clip: true
+                                    property real offset: 0
+
+                                    Row {
+                                        id: summaryRow
+                                        spacing: 40
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        x: summaryMarquee.offset
+
+                                        Text {
+                                            text: modelData.summary
+                                            font.pixelSize: 16 * Appearance.scaleFactor
+                                            font.bold: true
+                                            color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 1)
+                                        }
+
+                                        Text {
+                                            text: modelData.summary
+                                            font.pixelSize: 16 * Appearance.scaleFactor
+                                            font.bold: true
+                                            color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 1)
+                                        }
+                                    }
+
+                                    NumberAnimation on offset {
+                                        id: summaryAnim
+                                        from: 0
+                                        to: -(summaryMetrics.width + 40)
+                                        duration: (summaryMetrics.width + 40) * 40
+                                        loops: Animation.Infinite
+                                        running: summaryMarquee.visible
+                                    }
+
+                                    Component.onCompleted: if (summaryMarquee.visible) summaryAnim.restart()
+                                }
                             }
                         }
 
-                        Text {
-                            text: modelData.body
-                            font.pixelSize: 16 * Appearance.scaleFactor
-                            color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.6)
+                        Item {
+                            id: bodyWrapper
                             Layout.fillWidth: true
-                            elide: Text.ElideRight
-                            maximumLineCount: 2
-                            wrapMode: Text.Wrap
+                            height: 24 * Appearance.scaleFactor
+                            clip: true
+
+                            TextMetrics {
+                                id: bodyMetrics
+                                text: modelData.body
+                                font.pixelSize: 12 * Appearance.scaleFactor
+                            }
+
+                            Text {
+                                id: bodyText
+                                visible: bodyMetrics.width <= bodyWrapper.width
+                                text: modelData.body
+                                font.pixelSize: 12 * Appearance.scaleFactor
+                                color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.6)
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Item {
+                                id: bodyMarquee
+                                visible: bodyMetrics.width > bodyWrapper.width
+                                anchors.fill: parent
+                                clip: true
+                                property real offset: 0
+
+                                Row {
+                                    id: bodyScrollRow
+                                    spacing: 40
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    x: bodyMarquee.offset
+
+                                    Text {
+                                        text: modelData.body
+                                        font.pixelSize: 12 * Appearance.scaleFactor
+                                        color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.6)
+                                    }
+                                    Text {
+                                        text: modelData.body
+                                        font.pixelSize: 12 * Appearance.scaleFactor
+                                        color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.6)
+                                    }
+                                }
+
+                                NumberAnimation on offset {
+                                    id: bodyAnim
+                                    from: 0
+                                    to: -(bodyMetrics.width + 40)
+                                    duration: (bodyMetrics.width + 40) * 40
+                                    loops: Animation.Infinite
+                                    running: bodyMarquee.visible
+                                }
+
+                                Component.onCompleted: if (bodyMarquee.visible) bodyAnim.restart()
+                            }
                         }
 
                         Text {

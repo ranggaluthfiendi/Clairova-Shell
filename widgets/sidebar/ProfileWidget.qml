@@ -143,7 +143,6 @@ Item {
 
             NotifWidget {
                 id: notifWidget
-                // Layout.leftMargin: 8 * Appearance.scaleFactor
                 onRequestNotifToggle: toggleNotif()
             }
 

@@ -1,5 +1,4 @@
 //@pragma UseQApplication
-
 import qs.config
 import qs.utils
 import qs.widgets.setting
@@ -42,7 +41,7 @@ PopupWindow {
     Item {
         id: wrapper
         width: parent.width
-        height: 380 * Appearance.scaleFactor
+        height: 300 * Appearance.scaleFactor
         y: settingPopup.contentY
 
         Rectangle {
@@ -57,6 +56,10 @@ PopupWindow {
                 contentHeight: layout.implicitHeight + 32 * Appearance.scaleFactor
                 interactive: true
                 clip: true
+
+                ScrollBar.vertical: ScrollBar {
+                    policy: Qt.ScrollBarAsNeeded
+                }
 
                 ColumnLayout {
                     id: layout
@@ -86,7 +89,6 @@ PopupWindow {
                     }
 
                     TransparentWidget {}
-
                     PrimaryWidget {}
                     SecondaryWidget{}
                     BaseWidget{}
