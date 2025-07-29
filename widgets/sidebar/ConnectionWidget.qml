@@ -21,7 +21,6 @@ Item {
             id: row
             spacing: 10 * Appearance.scaleFactor
 
-            // === Bluetooth Tile ===
             Rectangle {
                 id: bluetoothTile
                 width: 180 * Appearance.scaleFactor
@@ -78,7 +77,6 @@ Item {
                 }
             }
 
-            // === WiFi Tile ===
             Rectangle {
                 id: wifiTile
                 width: 180 * Appearance.scaleFactor

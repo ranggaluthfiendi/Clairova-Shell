@@ -7,12 +7,12 @@ import Quickshell
 
 Item {
     id: timeWrapper
-
-    signal requestSidebarToggle()
+    
+    signal requestSidebarToggle()   
 
     Layout.preferredWidth: 115 * Appearance.scaleFactor
     Layout.preferredHeight: 32 * Appearance.scaleFactor
-    Layout.rightMargin: 10 * Appearance.scaleFactor
+    Layout.rightMargin: 12 * Appearance.scaleFactor
     Layout.leftMargin: 10 * Appearance.scaleFactor
 
     property string timeText: "--:--"

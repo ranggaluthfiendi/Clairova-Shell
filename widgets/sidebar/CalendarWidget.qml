@@ -49,7 +49,6 @@ Item {
                 
                 Row {
                     id: contentRow
-                    // spacing: 2 * Appearance.scaleFactor
                     anchors.left: parent.left
                     anchors.leftMargin: 15 * Appearance.scaleFactor
                     anchors.right: parent.right

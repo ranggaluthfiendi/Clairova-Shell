@@ -25,8 +25,6 @@ Rectangle {
         id: iconRow
         anchors.fill: parent
         anchors.rightMargin: 12 * Appearance.scaleFactor
-        spacing: 6 * Appearance.scaleFactor
-
         TimeWidget {}
         BluetoothWidget {}
         WifiWidget {}

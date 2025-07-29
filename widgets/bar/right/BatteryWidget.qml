@@ -73,7 +73,6 @@ Item {
                 ctx.quadraticCurveTo(w, 0, w - r, 0)
                 ctx.lineTo(r, 0)
             } else {
-                // Wave kanan
                 const yStep = h / p
                 let prevX = w
                 let prevY = h
@@ -101,7 +100,7 @@ Item {
 
         Timer {
             interval: 16
-            running: batteryLevel < 99
+            running: batteryLevel <= 99
             repeat: true
             onTriggered: {
                 batteryCanvas.time += batteryCanvas.speed

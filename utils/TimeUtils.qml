@@ -1,38 +1,32 @@
 import QtQuick
 import Quickshell
+import QtQml
 import Quickshell.Io
 
 Item {
     id: timeLogic
     property string time: "--:--"
 
-    Process {
-        id: timeProc
-        command: ["sh", "-c", `
-            date_str=$(date '+%a %d  %H:%M')
-            offset=$(date +%z)
-            case "$offset" in
-                +0700) zone="WIB" ;;
-                +0800) zone="WITA" ;;
-                +0900) zone="WIT" ;;
-                *) zone="" ;;
-            esac
-            echo "$date_str $zone"
-        `]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (this.text.length > 0) {
-                    timeLogic.time = this.text.trim()
-                }
-            }
-        }
-    }
-
     Timer {
         interval: 1000
         running: true
         repeat: true
         triggeredOnStart: true
-        onTriggered: timeProc.running = true
+        onTriggered: {
+            const now = new Date()
+            const hours = now.getHours().toString().padStart(2, "0")
+            const minutes = now.getMinutes().toString().padStart(2, "0")
+            const day = now.getDate().toString().padStart(2, "0")
+            const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+            const weekday = dayNames[now.getDay()]
+
+            const offset = now.getTimezoneOffset()
+            const zone = offset === -420 ? "WIB"
+                       : offset === -480 ? "WITA"
+                       : offset === -540 ? "WIT"
+                       : ""
+
+            timeLogic.time = `${weekday} ${day} • ${hours}:${minutes} ${zone}`
+        }
     }
 }

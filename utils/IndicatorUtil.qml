@@ -60,7 +60,6 @@ Item {
         }
     }
 
-    // === BRIGHTNESS (JANGAN DIUBAH) ===
     Process {
         id: getBrightnessProc
         command: ["brightnessctl", "g"]

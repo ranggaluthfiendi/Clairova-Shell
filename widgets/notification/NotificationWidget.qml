@@ -28,9 +28,8 @@ Item {
         const month = monthNames[date.getMonth()]
         const year = date.getFullYear()
 
-        return `${hours}:${minutes} ${weekday} ${day} ${month} ${year} • `
+        return `${hours}:${minutes} • ${weekday} ${day} ${month} ${year} • `
     }
-
 
     ColumnLayout {
         id: mainLayout

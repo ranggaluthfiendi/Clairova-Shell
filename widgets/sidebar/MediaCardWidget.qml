@@ -356,7 +356,6 @@ Item {
             }
 
             RowLayout {
-                // Previous
                 Item {
                     width: 20 * scaleFactor
                     height: 20 * scaleFactor
@@ -399,7 +398,6 @@ Item {
 
                 Item { Layout.fillWidth: true }
 
-                // Next
                 Item {
                     width: 20 * scaleFactor
                     height: 20 * scaleFactor

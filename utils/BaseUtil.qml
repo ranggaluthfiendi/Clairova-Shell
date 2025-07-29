@@ -1,4 +1,3 @@
-// BaseUtil.qml
 import QtQuick
 import Quickshell
 import Quickshell.Io
