@@ -49,7 +49,7 @@ Item {
                 
                 Row {
                     id: contentRow
-                    spacing: 2 * Appearance.scaleFactor
+                    // spacing: 2 * Appearance.scaleFactor
                     anchors.left: parent.left
                     anchors.leftMargin: 15 * Appearance.scaleFactor
                     anchors.right: parent.right
@@ -61,7 +61,7 @@ Item {
 
                     Text {
                         text: calendarWidget.currentMonth + "・"
-                        font.pixelSize: 18 * Appearance.scaleFactor
+                        font.pixelSize: 16 * Appearance.scaleFactor
                         font.family: Appearance.defaultFont
                         font.bold: true
                         color: Appearance.white
@@ -70,7 +70,7 @@ Item {
                     Text {
                         text: calendarWidget.currentYear
                         font.family: Appearance.defaultFont
-                        font.pixelSize: 18 * Appearance.scaleFactor
+                        font.pixelSize: 16 * Appearance.scaleFactor
                         color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.5)
                     }
                 }
@@ -116,41 +116,50 @@ Item {
 
             Item { Layout.fillWidth: true }
 
-            Rectangle {
-                color: Appearance.background
-                radius: 20 * Appearance.scaleFactor
-                Layout.preferredHeight: 32 * Appearance.scaleFactor
-                Layout.preferredWidth: 32 * Appearance.scaleFactor
-                Text {
-                    anchors.centerIn: parent
-                    text: "keyboard_arrow_left"
-                    font.family: Appearance.materialSymbols
-                    font.pixelSize: 20 * Appearance.scaleFactor
-                    color: Appearance.white
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: calendarUtil.prevMonth()
-                }
-            }
+             RowLayout {
+                spacing: 6 * Appearance.scaleFactor
+                Layout.rightMargin: 15 * Appearance.scaleFactor
 
-            Rectangle {
-                color: Appearance.background
-                radius: 20 * Appearance.scaleFactor
-                Layout.preferredHeight: 32 * Appearance.scaleFactor
-                Layout.preferredWidth: 32 * Appearance.scaleFactor
-                Text {
-                    anchors.centerIn: parent
-                    text: "keyboard_arrow_right"
-                    font.family: Appearance.materialSymbols
-                    font.pixelSize: 20 * Appearance.scaleFactor
-                    color: Appearance.white
+                Rectangle {
+                    color: Appearance.background
+                    radius: 20 * Appearance.scaleFactor
+                    Layout.preferredHeight: 32 * Appearance.scaleFactor
+                    Layout.preferredWidth: 32 * Appearance.scaleFactor
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "keyboard_arrow_left"
+                        font.family: Appearance.materialSymbols
+                        font.pixelSize: 20 * Appearance.scaleFactor
+                        color: Appearance.white
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: calendarUtil.prevMonth()
+                    }
                 }
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: calendarUtil.nextMonth()
+
+                Rectangle {
+                    color: Appearance.background
+                    radius: 20 * Appearance.scaleFactor
+                    Layout.preferredHeight: 32 * Appearance.scaleFactor
+                    Layout.preferredWidth: 32 * Appearance.scaleFactor
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "keyboard_arrow_right"
+                        font.family: Appearance.materialSymbols
+                        font.pixelSize: 20 * Appearance.scaleFactor
+                        color: Appearance.white
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: calendarUtil.nextMonth()
+                    }
                 }
             }
         }

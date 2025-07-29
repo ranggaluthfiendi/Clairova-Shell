@@ -148,7 +148,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: (node.audio.muted || node.audio.volume === 0) ? "volume_off" : "volume_up"
+                    text: (!node || !node.audio || node.audio.muted || node.audio.volume === 0) ? "volume_off" : "volume_up"
                     font.family: Appearance.materialSymbols
                     font.pixelSize: Appearance.extraLarge * Appearance.scaleFactor
                     color: Appearance.white

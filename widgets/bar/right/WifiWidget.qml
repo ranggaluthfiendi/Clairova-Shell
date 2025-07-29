@@ -10,6 +10,7 @@ import Quickshell.Io
 Item {
     id: wifiWidget
     signal requestSidebarToggle()
+    Layout.rightMargin: 8 * Appearance.scaleFactor
 
     width: 32 * Appearance.scaleFactor
     height: 32 * Appearance.scaleFactor

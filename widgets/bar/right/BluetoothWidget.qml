@@ -20,18 +20,6 @@ Item {
     property color baseColor: Appearance.color
     property bool toggled: false
 
-    // MouseArea {
-    //     id: clickArea
-    //     anchors.fill: parent
-    //     onClicked: {
-    //         circleBg.color = highlightColor
-    //         flashAnim.restart()
-    //         bluetoothUtils.toggleBluetooth()
-    //     }
-    //     hoverEnabled: true
-    //     cursorShape: Qt.PointingHandCursor
-    // }
-
     MouseArea {
         id: clickArea
         anchors.fill: parent

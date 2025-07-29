@@ -12,17 +12,43 @@ Item {
     width: parent.width
     height: 100 * Appearance.scaleFactor
 
-    required property PwNode node;
+    required property PwNode node
 
-	PwObjectTracker { objects: [ node ] }
-    
+    PwObjectTracker { objects: [ node ] }
+
+    readonly property string safeDisplayName: {
+        if (!node || !node.properties) return "Default Mic"
+
+        const p = node.properties
+
+        if (p["device.description"]) return p["device.description"]
+        if (p["media.name"] && p["media.name"] !== p["device.description"])
+            return `${p["device.description"] ?? "Mic"} - ${p["media.name"]}`
+
+        const name = node.name ?? ""
+
+        if (name.includes("analog")) return "Built-in Mic"
+        else if (name.includes("bluez")) return "Bluetooth Audio"
+        else if (name.includes("usb")) return "USB Audio"
+        else if (name.includes("hdmi")) return "HDMI Audio"
+
+        return name || "Default Mic"
+    }
+
+    function displayName() {
+        if (!node || !node.properties) return safeDisplayName
+        const media = node.properties["media.name"]
+        if (media && media !== safeDisplayName)
+            return `${safeDisplayName} - ${media}`
+        return safeDisplayName
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.leftMargin: 8 * Appearance.scaleFactor
         anchors.rightMargin: 8 * Appearance.scaleFactor
 
         RowLayout {
-            id: speakerRowLayout
             Layout.fillWidth: true
             spacing: 6 * Appearance.scaleFactor
 
@@ -35,11 +61,7 @@ Item {
 
                 TextMetrics {
                     id: inputMetrics
-                    text: {
-                        const app = node.properties["application.name"] ?? (node.description != "" ? node.description : node.name);
-                        const media = node.properties["media.name"];
-                        return media != undefined ? `${app} - ${media}` : app;
-                    }
+                    text: displayName()
                     font.pixelSize: 14 * Appearance.scaleFactor
                     font.family: Appearance.defaultFont
                 }
@@ -47,11 +69,7 @@ Item {
                 Text {
                     id: speakerText
                     visible: inputMetrics.width <= inputWrapper.width
-                    text: {
-                        const app = node.properties["application.name"] ?? (node.description != "" ? node.description : node.name);
-                        const media = node.properties["media.name"];
-                        return media != undefined ? `${app} - ${media}` : app;
-                    }
+                    text: displayName()
                     font.pixelSize: 14 * Appearance.scaleFactor
                     font.family: Appearance.defaultFont
                     color: Appearance.white
@@ -67,27 +85,18 @@ Item {
                     property real offset: 0
 
                     Row {
-                        id: speakerScrollRow
                         spacing: 40
                         anchors.verticalCenter: parent.verticalCenter
                         x: speakerMarquee.offset
 
                         Text {
-                            text: {
-                                const app = node.properties["application.name"] ?? (node.description != "" ? node.description : node.name);
-                                const media = node.properties["media.name"];
-                                return media != undefined ? `${app} - ${media}` : app;
-                            }
+                            text: displayName()
                             font.pixelSize: 14 * Appearance.scaleFactor
                             font.family: Appearance.defaultFont
                             color: Appearance.white
                         }
                         Text {
-                            text: {
-                                const app = node.properties["application.name"] ?? (node.description != "" ? node.description : node.name);
-                                const media = node.properties["media.name"];
-                                return media != undefined ? `${app} - ${media}` : app;
-                            }
+                            text: displayName()
                             font.pixelSize: 14 * Appearance.scaleFactor
                             font.family: Appearance.defaultFont
                             color: Appearance.white
@@ -108,17 +117,15 @@ Item {
             }
 
             Label {
-                text: node.audio.muted ? "0%" : Math.floor(node.audio.volume * 100) + "%"
+                text: (!node || !node.audio) ? "0%" : (node.audio.muted ? "0%" : Math.floor(node.audio.volume * 100) + "%")
                 font.pixelSize: 14 * Appearance.scaleFactor
                 font.family: Appearance.defaultFont
                 color: Appearance.white
-                Layout.alignment: Qt.AlignVCenter
             }
 
             Item {
                 Layout.preferredWidth: 30 * Appearance.scaleFactor
                 Layout.preferredHeight: 30 * Appearance.scaleFactor
-                Layout.alignment: Qt.AlignVCenter
 
                 MouseArea {
                     anchors.fill: parent
@@ -129,7 +136,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: (node.audio.muted || node.audio.volume === 0) ? "mic_off" : "mic"
+                    text: (!node || !node.audio || node.audio.muted || node.audio.volume === 0) ? "mic_off" : "mic"
                     font.family: Appearance.materialSymbols
                     font.pixelSize: 14 * Appearance.scaleFactor
                     color: Appearance.white
@@ -158,7 +165,7 @@ Item {
 
                 Rectangle {
                     id: volumeFill
-                    width: (node.audio.muted ? 0 : node.audio.volume) * volumeBar.width
+                    width: (!node || !node.audio || node.audio.muted ? 0 : node.audio.volume * volumeBar.width)
                     height: volumeBar.height
                     radius: 30 * Appearance.scaleFactor
                     color: Appearance.primary
@@ -223,14 +230,18 @@ Item {
 
                 onWheel: (wheel) => {
                     var delta = wheel.angleDelta.y > 0 ? 0.01 : -0.01
-                    node.audio.volume = Math.max(0, Math.min(1, node.audio.volume + delta))
+                    if (node && node.audio) {
+                        node.audio.volume = Math.max(0, Math.min(1, node.audio.volume + delta))
+                    }
                 }
 
                 function update(mouseX) {
                     var ratio = Math.max(0, Math.min(1, mouseX / volumeBar.width))
-                    node.audio.volume = ratio
+                    if (node && node.audio) {
+                        node.audio.volume = ratio
+                    }
                 }
             }
         }
     }
-}    
+}
