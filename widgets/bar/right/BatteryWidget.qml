@@ -40,23 +40,25 @@ Item {
     Canvas {
         id: batteryCanvas
         anchors.fill: parent
+
         property real level: batteryLevel
         property real r: height / 2
         property int pointCount: 20
         property real time: 0
-        property real amplitude: batteryLevel < 99 ? 3 : 0
-        property real speed: batteryLevel < 99 ? 0.05 : 0
+        property real amplitude: batteryLevel < 100 && batteryLevel > 0 ? 3 : 0
+        property real speed: batteryLevel < 100 && batteryLevel > 0 ? 0.05 : 0
         property var phaseOffset: []
         property real blinkingOpacity: 1
         opacity: isFull ? blinkingOpacity : 1
+        visible: batteryLevel > 0 
 
         onPaint: {
             const ctx = getContext("2d")
             ctx.clearRect(0, 0, width, height)
 
-            const w = width * level / 100
+            const baseLevel = Math.max(level, 0)
+            const w = Math.max(width * baseLevel / 100, r * 2) // jaga agar selalu minimal 1 kapsul
             const h = height
-            const r = batteryCanvas.r
             const a = amplitude
             const p = pointCount
 
@@ -65,14 +67,15 @@ Item {
             ctx.quadraticCurveTo(0, 0, 0, r)
             ctx.lineTo(0, h - r)
             ctx.quadraticCurveTo(0, h, r, h)
-            ctx.lineTo(w - (level < 99 ? 0 : r), h)
 
-            if (level >= 99) {
-                ctx.quadraticCurveTo(w, h, w, h - r)
-                ctx.lineTo(w, r)
-                ctx.quadraticCurveTo(w, 0, w - r, 0)
-                ctx.lineTo(r, 0)
-            } else {
+            if (baseLevel >= 99) {
+                // FULL CAPSULE
+                ctx.lineTo(width - r, h)
+                ctx.quadraticCurveTo(width, h, width, h - r)
+                ctx.lineTo(width, r)
+                ctx.quadraticCurveTo(width, 0, width - r, 0)
+            } else if (baseLevel > 0) {
+                // WITH WAVE
                 const yStep = h / p
                 let prevX = w
                 let prevY = h
@@ -90,17 +93,19 @@ Item {
 
                 ctx.lineTo(w, 0)
                 ctx.lineTo(r, 0)
+            } else {
+                // batteryLevel 0 → hanya kapsul kosong
+                ctx.lineTo(r, 0)
             }
 
             ctx.closePath()
-            ctx.fillStyle =  Qt.rgba(Appearance.primary.r, Appearance.primary.g, Appearance.primary.b, 0.5)
+            ctx.fillStyle = Qt.rgba(Appearance.primary.r, Appearance.primary.g, Appearance.primary.b, 0.5)
             ctx.fill()
         }
 
-
         Timer {
             interval: 16
-            running: batteryLevel <= 99
+            running: batteryLevel > 0 && batteryLevel < 99
             repeat: true
             onTriggered: {
                 batteryCanvas.time += batteryCanvas.speed
@@ -121,6 +126,7 @@ Item {
         }
     }
 
+
     Text {
         id: batteryText
         anchors.centerIn: parent
@@ -128,7 +134,7 @@ Item {
         color: Appearance.white
         font.family: Appearance.bitcountFont
         font.pixelSize: 14 * Appearance.scaleFactor
-        opacity: isFull ? blinkingOpacity : 1
+        opacity: isFull ? batteryCanvas.blinkingOpacity : 1
     }
 
     Text {
@@ -140,7 +146,7 @@ Item {
         }
         text: "electric_bolt"
         font.family: Appearance.materialSymbols
-        color:  Appearance.white
+        color: Appearance.white
         font.pixelSize: 10 * Appearance.scaleFactor
         z: 2
     }
@@ -148,11 +154,10 @@ Item {
     Connections {
         target: batteryUtils
         function onBatteryPercentChanged() {
-            batteryLevel = batteryUtils.batteryPercent;
+            batteryLevel = batteryUtils.batteryPercent
         }
         function onIsChargingChanged() {
-            isCharging = batteryUtils.isCharging;
+            isCharging = batteryUtils.isCharging
         }
     }
-    
 }

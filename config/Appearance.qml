@@ -16,7 +16,7 @@ Singleton {
     // Recomended scale is between: 1.35 - 1.6, very good with 1440p laptops
     // Recomended scale for 1080p laptop is: 1 - 1.3
     // scaleFactor 1.7+ is bad
-    readonly property real scaleFactor: 1.2
+    property real scaleFactor: 1.2
 
     // Color
     property color background: "#2E2C30"
@@ -30,7 +30,7 @@ Singleton {
         background.b,
         0.5
     )
-    readonly property color color2: Qt.rgba(
+    property color color2: Qt.rgba(
         color.r,
         color.g,
         color.b,

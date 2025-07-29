@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
@@ -8,13 +9,15 @@ import qs.config
 
 Item {
     id: root
-    width: 150 * scaleFactor
-    height: 24 * scaleFactor
+    Layout.fillWidth: true
+    Layout.preferredHeight: 6 * scaleFactor
+    implicitWidth: 150 * scaleFactor
+    implicitHeight: 6 * scaleFactor
 
     property real scaleFactor: Appearance.scaleFactor
     property alias progress: mediaUtil.progress
     property alias isPlaying: mediaUtil.isPlaying
-    property color backgroundColor: Appearance.color
+    property color backgroundColor: Appearance.background
 
     signal onSeek(real value)
 
@@ -25,8 +28,8 @@ Item {
     Rectangle {
         id: track
         anchors.fill: parent
-        radius: 30 * scaleFactor
-        color: Appearance.background
+        radius: height / 2
+        color: backgroundColor
 
         Rectangle {
             id: fillWrapper
@@ -45,7 +48,7 @@ Item {
             Rectangle {
                 id: fill
                 anchors.fill: parent
-                radius: 30 * scaleFactor
+                radius: height / 2
                 color: "white"
 
                 Behavior on width {

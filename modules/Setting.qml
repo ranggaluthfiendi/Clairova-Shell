@@ -89,6 +89,8 @@ PopupWindow {
                     }
 
                     TransparentWidget {}
+                    TransparentStrengthWidget{}
+                    ScaleWidget{}
                     PrimaryWidget {}
                     SecondaryWidget{}
                     BaseWidget{}

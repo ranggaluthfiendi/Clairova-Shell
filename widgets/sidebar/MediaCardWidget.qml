@@ -1,21 +1,22 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Io
-import Qt5Compat.GraphicalEffects
+import Quickshell.Widgets
 import qs.config
 import qs.utils
 import qs.widgets.sidebar
 
 Item {
     id: mediaCard
-    width: 400 * scaleFactor
-    height: 100 * scaleFactor
+
+    MediaUtil { id: mediaUtil }
+    width: parent ? parent.width : 360
+    implicitHeight: contentLayout.implicitHeight
 
     property real scaleFactor: Appearance.scaleFactor
-    property MediaUtil mediaUtil
-
     Process { id: playPauseProc; command: ["playerctl", "-p", "plasma-browser-integration", "play-pause"] }
     Process { id: nextProc; command: ["playerctl", "-p", "plasma-browser-integration", "next"] }
     Process { id: prevProc; command: ["playerctl", "-p", "plasma-browser-integration", "previous"] }
@@ -24,86 +25,175 @@ Item {
     function mediaNext()      { nextProc.running = true }
     function mediaPrev()      { prevProc.running = true }
 
-    RowLayout {
+    Column {
         anchors.fill: parent
-        anchors.margins: 15 * scaleFactor
-        spacing: 10 * scaleFactor
+        spacing: 2
 
-        Item {
-            id: coverWrapper
-            width: 100 * scaleFactor
-            height: 100 * scaleFactor
-            property bool hovered: false
+        ClippingWrapperRectangle {
+            width: 370 * Appearance.scaleFactor
+            height: 180 * Appearance.scaleFactor
+            radius: 12 * Appearance.scaleFactor
 
-            readonly property bool isBrightCover: mediaUtil.coverArt.includes("googleusercontent") || mediaUtil.coverArt.includes("ytimg")
-
-            Rectangle {
+            Item {
+                id: container
                 anchors.fill: parent
-                color: Appearance.primary
-                radius: 8 * scaleFactor
-            }
 
-            Image {
-                id: coverArt
-                anchors.fill: parent
-                source: mediaUtil.coverArt || ""
-                fillMode: Image.PreserveAspectCrop
-                smooth: true
-
-                layer.enabled: true
-                layer.effect: OpacityMask {
-                    maskSource: Rectangle {
-                        width: coverArt.width
-                        height: coverArt.height
-                        radius: 8 * scaleFactor
-                    }
+                Rectangle {
+                    anchors.fill: parent
+                    color: Appearance.primary
                 }
-            }
 
-            Text {
-                visible: coverWrapper.hovered
-                anchors.centerIn: parent
-                font.family: Appearance.materialSymbols
-                font.pixelSize: 36 * scaleFactor
-                text: "open_in_new"
-                color: coverWrapper.isBrightCover ? "black" : "white"
-                z: 2
-
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    color: coverWrapper.isBrightCover ? "#ffffffcc" : "#000000cc"
-                    radius: 8
-                    samples: 16
-                    horizontalOffset: 0
-                    verticalOffset: 0
+                Image {
+                    id: cover
+                    source: mediaUtil.coverArt || ""
+                    anchors.fill: parent
+                    fillMode: Image.PreserveAspectCrop
                 }
-            }
 
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                onEntered: coverWrapper.hovered = true
-                onExited: coverWrapper.hovered = false
-                onClicked: {
-                    if (mediaUtil.url)
-                        Qt.openUrlExternally(mediaUtil.url)
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#000000"
+                    opacity: 0.6
                 }
-                cursorShape: Qt.PointingHandCursor
             }
         }
 
-        ColumnLayout {
-            spacing: 6 * scaleFactor
-            Layout.fillWidth: true
+        Column {
+            anchors.fill: parent
+            anchors.topMargin: 5 * Appearance.scaleFactor
+            anchors.leftMargin: 335 * Appearance.scaleFactor
+            Item {
+                width: 30 * scaleFactor
+                height: 30 * scaleFactor
 
-            RowLayout {
-                id: titleRowLayout
-                Layout.fillWidth: true
-                spacing: 6 * scaleFactor
+                Rectangle {
+                    anchors.fill: parent
+                    radius: width / 2
+                    color: Appearance.background
+                }
 
                 Item {
-                    id: titleWrapper
-                    Layout.fillWidth: true
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+
+                    Item {
+                        id: rotatingIcon
+                        anchors.centerIn: parent
+                        width: parent.width
+                        height: parent.height
+                        transformOrigin: Item.Center
+
+                        property real currentRotation: 0
+                        rotation: currentRotation
+
+                        transform: Scale {
+                            id: scaleTransform
+                            origin.x: rotatingIcon.width / 2
+                            origin.y: rotatingIcon.height / 2
+                            xScale: 1.0
+                            yScale: 1.0
+                        }
+
+                        Timer {
+                            id: loopTimer
+                            interval: 16
+                            repeat: true
+                            running: false
+                            onTriggered: {
+                                rotatingIcon.currentRotation += 1
+                                if (rotatingIcon.currentRotation >= 360)
+                                    rotatingIcon.currentRotation = 0
+                            }
+                        }
+
+                        NumberAnimation {
+                            id: returnToZero
+                            target: rotatingIcon
+                            property: "currentRotation"
+                            easing.type: Easing.InOutQuad
+                        }
+
+                        SequentialAnimation {
+                            id: pressEffect
+                            running: false
+                            NumberAnimation {
+                                target: scaleTransform
+                                property: "xScale"
+                                to: 1.2
+                                duration: 60
+                            }
+                            NumberAnimation {
+                                target: scaleTransform
+                                property: "xScale"
+                                to: 1.0
+                                duration: 80
+                            }
+                            ParallelAnimation {
+                                NumberAnimation {
+                                    target: scaleTransform
+                                    property: "yScale"
+                                    to: 1.2
+                                    duration: 60
+                                }
+                                NumberAnimation {
+                                    target: scaleTransform
+                                    property: "yScale"
+                                    to: 1.0
+                                    duration: 80
+                                }
+                            }
+                        }
+
+                        Connections {
+                            target: mediaUtil
+                            function onStatusChanged() {
+                                if (mediaUtil.status === "Playing") {
+                                    returnToZero.stop()
+                                    loopTimer.running = true
+                                } else {
+                                    loopTimer.running = false
+                                    let angle = rotatingIcon.currentRotation
+                                    let remaining = (360 - (angle % 360)) % 360
+
+                                    returnToZero.from = angle
+                                    returnToZero.to = angle + remaining
+                                    returnToZero.duration = (mediaUtil.status === "Paused") ? 1200 : 800
+                                    returnToZero.restart()
+                                }
+                            }
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "music_note"
+                            font.family: Appearance.materialSymbols
+                            font.pixelSize: 24 * scaleFactor
+                            color: "white"
+                        }
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        pressEffect.restart()
+                    }
+                }
+            }
+        }
+
+        Column{
+            anchors.fill: parent
+            anchors.topMargin: 80 * Appearance.scaleFactor
+            anchors.leftMargin: 20 * Appearance.scaleFactor
+            anchors.rightMargin: 20 * Appearance.scaleFactor
+            spacing: 18
+            Column {
+                spacing: 8
+                Item {
+                    width: 330 * scaleFactor
                     height: 16 * scaleFactor
                     clip: true
 
@@ -115,28 +205,26 @@ Item {
                     }
 
                     Text {
-                        id: titleText
-                        visible: titleMetrics.width <= titleWrapper.width
+                        visible: titleMetrics.width <= parent.width
+                        anchors.verticalCenter: parent.verticalCenter
                         text: mediaUtil.title || "Unknown Title"
                         font.pixelSize: 14 * scaleFactor
                         font.bold: true
                         color: Appearance.white
-                        anchors.verticalCenter: parent.verticalCenter
                         elide: Text.ElideRight
                     }
 
                     Item {
-                        id: titleMarquee
-                        visible: titleMetrics.width > titleWrapper.width
+                        visible: titleMetrics.width > parent.width
                         anchors.fill: parent
                         clip: true
                         property real offset: 0
 
                         Row {
-                            id: titleScrollRow
+                            id: titleScroll
                             spacing: 40
                             anchors.verticalCenter: parent.verticalCenter
-                            x: titleMarquee.offset
+                            x: parent.offset
 
                             Text {
                                 text: mediaUtil.title || "Unknown Title"
@@ -153,212 +241,101 @@ Item {
                         }
 
                         NumberAnimation on offset {
-                            id: titleAnim
                             from: 0
                             to: -(titleMetrics.width + 40)
                             duration: (titleMetrics.width + 40) * 40
                             loops: Animation.Infinite
-                            running: titleMarquee.visible
+                            running: true
                         }
-
-                        Component.onCompleted: if (titleMarquee.visible) titleAnim.restart()
                     }
                 }
+
                 Item {
-                    id: rotatingIcon
-                    width: 20 * scaleFactor
-                    height: 20 * scaleFactor
-                    transformOrigin: Item.Center
-                    property real currentRotation: 0
-                    rotation: currentRotation
+                    width: 330 * scaleFactor
+                    height: 14 * scaleFactor
+                    clip: true
 
-                    transform: Scale {
-                        id: scaleTransform
-                        origin.x: rotatingIcon.width / 2
-                        origin.y: rotatingIcon.height / 2
-                        xScale: 1.0
-                        yScale: 1.0
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        acceptedButtons: Qt.NoButton
-                        propagateComposedEvents: true
-                        onWheel: {
-                            if (wheel.angleDelta.y > 0)
-                                volumeUpProc.running = true
-                            else if (wheel.angleDelta.y < 0)
-                                volumeDownProc.running = true
-                        }
-                    }
-
-                    Timer {
-                        id: loopTimer
-                        interval: 16
-                        repeat: true
-                        running: false
-                        onTriggered: {
-                            rotatingIcon.currentRotation += 1
-                            if (rotatingIcon.currentRotation >= 360)
-                                rotatingIcon.currentRotation = 0
-                        }
-                    }
-
-                    NumberAnimation {
-                        id: returnToZero
-                        target: rotatingIcon
-                        property: "currentRotation"
-                        easing.type: Easing.InOutQuad
-                    }
-
-                    SequentialAnimation {
-                        id: pressEffect
-                        running: false
-                        NumberAnimation {
-                            target: scaleTransform
-                            property: "xScale"
-                            to: 1.2
-                            duration: 60
-                        }
-                        NumberAnimation {
-                            target: scaleTransform
-                            property: "xScale"
-                            to: 1.0
-                            duration: 80
-                        }
-                        ParallelAnimation {
-                            NumberAnimation {
-                                target: scaleTransform
-                                property: "yScale"
-                                to: 1.2
-                                duration: 60
-                            }
-                            NumberAnimation {
-                                target: scaleTransform
-                                property: "yScale"
-                                to: 1.0
-                                duration: 80
-                            }
-                        }
-                    }
-
-                    Connections {
-                        target: mediaUtil
-                        function onStatusChanged() {
-                            if (mediaUtil.status === "Playing") {
-                                returnToZero.stop()
-                                loopTimer.running = true
-                            } else {
-                                loopTimer.running = false
-                                let angle = rotatingIcon.currentRotation
-                                let remaining = (360 - (angle % 360)) % 360
-                                returnToZero.from = angle
-                                returnToZero.to = angle + remaining
-                                returnToZero.duration = (mediaUtil.status === "Paused") ? 1200 : 800
-                                returnToZero.restart()
-                            }
-                        }
+                    TextMetrics {
+                        id: artistMetrics
+                        text: mediaUtil.artist || "Unknown Artist"
+                        font.pixelSize: 12 * scaleFactor
                     }
 
                     Text {
-                        anchors.centerIn: parent
-                        text: "music_note"
-                        font.pixelSize: 18 * scaleFactor
-                        font.family: Appearance.materialSymbols
-                        color: Appearance.white
-                    }
-                }
-            }
-
-            Item {
-                id: artistWrapper
-                Layout.fillWidth: true
-                height: 14 * scaleFactor
-                clip: true
-
-                TextMetrics {
-                    id: artistMetrics
-                    text: mediaUtil.artist || "Unknown Artist"
-                    font.pixelSize: 12 * scaleFactor
-                }
-
-                Text {
-                    id: artistText
-                    visible: artistMetrics.width <= artistWrapper.width
-                    text: mediaUtil.artist || "Unknown Artist"
-                    font.pixelSize: 12 * scaleFactor
-                    color: Appearance.white
-                    elide: Text.ElideRight
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Item {
-                    id: artistMarquee
-                    visible: artistMetrics.width > artistWrapper.width
-                    anchors.fill: parent
-                    clip: true
-                    property real offset: 0
-
-                    Row {
-                        id: artistScrollRow
-                        spacing: 40
+                        visible: artistMetrics.width <= parent.width
                         anchors.verticalCenter: parent.verticalCenter
-                        x: artistMarquee.offset
-
-                        Text {
-                            text: mediaUtil.artist || "Unknown Artist"
-                            font.pixelSize: 12 * scaleFactor
-                            color: Appearance.white
-                        }
-                        Text {
-                            text: mediaUtil.artist || "Unknown Artist"
-                            font.pixelSize: 12 * scaleFactor
-                            color: Appearance.white
-                        }
+                        text: mediaUtil.artist || "Unknown Artist"
+                        font.pixelSize: 12 * scaleFactor
+                        color: Appearance.white
+                        elide: Text.ElideRight
                     }
 
-                    NumberAnimation on offset {
-                        id: artistAnim
-                        from: 0
-                        to: -(artistMetrics.width + 40)
-                        duration: (artistMetrics.width + 40) * 40
-                        loops: Animation.Infinite
-                        running: artistMarquee.visible
-                    }
+                    Item {
+                        visible: artistMetrics.width > parent.width
+                        anchors.fill: parent
+                        clip: true
+                        property real offset: 0
 
-                    Component.onCompleted: if (artistMarquee.visible) artistAnim.restart()
+                        Row {
+                            id: artistScroll
+                            spacing: 40
+                            anchors.verticalCenter: parent.verticalCenter
+                            x: parent.offset
+
+                            Text {
+                                text: mediaUtil.artist || "Unknown Artist"
+                                font.pixelSize: 12 * scaleFactor
+                                color: Appearance.white
+                            }
+                            Text {
+                                text: mediaUtil.artist || "Unknown Artist"
+                                font.pixelSize: 12 * scaleFactor
+                                color: Appearance.white
+                            }
+                        }
+
+                        NumberAnimation on offset {
+                            from: 0
+                            to: -(artistMetrics.width + 40)
+                            duration: (artistMetrics.width + 40) * 40
+                            loops: Animation.Infinite
+                            running: true
+                        }
+                    }
                 }
             }
+
+            ProgressBar {
+                id: progressBar
+                Layout.fillWidth: true
+                width: 330 * Appearance.scaleFactor
+                height: 6 * scaleFactor
+                backgroundColor: Appearance.background
+                progress: mediaUtil.progress
+            }
+        }
+
+        Column {
+            anchors.fill: parent
+            anchors.topMargin: 150 * Appearance.scaleFactor
+            anchors.leftMargin: 20 * Appearance.scaleFactor
             Text {
                 text: mediaUtil.formattedTime
-                font.pixelSize: 10 * scaleFactor
+                font.pixelSize: 12 * scaleFactor
                 color: Appearance.white
+                font.family: Appearance.defaultFont
             }
+        }
 
-            Item {
-                Layout.fillHeight: true
-            }
-
-            RowLayout {
-                spacing: 8 * scaleFactor
-                Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: true
-
-                ProgressBar {
-                    id: progressBar
-                    Layout.fillWidth: true
-                    height: 6 * scaleFactor
-                    backgroundColor: Appearance.background
-                    progress: mediaUtil.progress
-                }
-                
-            }
-
-            RowLayout {
+        Column {
+            anchors.fill: parent
+            anchors.topMargin: 150 * Appearance.scaleFactor
+            anchors.leftMargin: 250 * Appearance.scaleFactor
+            Row {
+                spacing: 25 * Appearance.scaleFactor
                 Item {
-                    width: 20 * scaleFactor
-                    height: 20 * scaleFactor
+                    width: 18 * scaleFactor
+                    height: 18 * scaleFactor
 
                     Text {
                         anchors.centerIn: parent
@@ -374,12 +351,9 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                     }
                 }
-
-                Item { Layout.fillWidth: true }
-
                 Item {
-                    width: 20 * scaleFactor
-                    height: 20 * scaleFactor
+                    width: 18 * scaleFactor
+                    height: 18 * scaleFactor
 
                     Text {
                         anchors.centerIn: parent
@@ -395,12 +369,9 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                     }
                 }
-
-                Item { Layout.fillWidth: true }
-
                 Item {
-                    width: 20 * scaleFactor
-                    height: 20 * scaleFactor
+                    width: 18 * scaleFactor
+                    height: 18 * scaleFactor
 
                     Text {
                         anchors.centerIn: parent

@@ -11,7 +11,7 @@ import qs.modules
 
 Item {
     id: brightnessVolumeWidget
-    width: 200 * Appearance.scaleFactor
+    width: 300 * Appearance.scaleFactor
     height: 100 * Appearance.scaleFactor
 
     BrightnessUtil { id: brightnessUtil }

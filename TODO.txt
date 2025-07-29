@@ -1,5 +1,5 @@
 # settings
-1. Add Scale
+1. Add Scale (Done)
 2. Add Color slider (Done)
 3. Change Wallpaper 
 4. Toggle Transparent responsive as Color (Done)

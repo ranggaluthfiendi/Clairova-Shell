@@ -82,7 +82,7 @@ PopupWindow {
 
                     Item {
                         Layout.fillWidth: true
-                        Layout.topMargin: 65 * Appearance.scaleFactor
+                        Layout.topMargin: 5 * Appearance.scaleFactor
                         Layout.alignment: Qt.AlignHCenter
 
                         BrightnessVolumeWidget {
@@ -91,23 +91,19 @@ PopupWindow {
                     }
 
                     Item {
-                        Layout.fillWidth: true
-                        Layout.topMargin: 80 * Appearance.scaleFactor
-                        Layout.preferredWidth: parent.width
-                        Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: 90 * Appearance.scaleFactor
+                        Layout.leftMargin: 14  * Appearance.scaleFactor
 
                         MediaCardWidget {
-                            anchors.fill: parent
-                            mediaUtil: mediaUtil
-                            visible: true
+                            Layout.preferredWidth: parent.width - (10 * Appearance.scaleFactor)
                         }
                     }
 
                     CalendarWidget {
-                        Layout.topMargin: 140 * Appearance.scaleFactor
+                        Layout.topMargin: 190 * Appearance.scaleFactor
                         Layout.bottomMargin: 20 * Appearance.scaleFactor
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: parent.width - (35 * Appearance.scaleFactor)
+                        Layout.preferredWidth: parent.width - (5 * Appearance.scaleFactor)
                     }
                 }
             }
