@@ -105,7 +105,7 @@ Item {
                         running: speakerMarquee.visible
                     }
 
-                    Component.onCompleted: if (speakerMarquee.visible) speakerAnim.restart()
+                    // Component.onCompleted: if (speakerMarquee.visible) speakerAnim.restart()
                 }
             }
 

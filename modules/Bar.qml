@@ -130,6 +130,32 @@ Scope {
                 }
             }
 
+            MouseArea {
+                id: edgeTrigger
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                    right: parent.right
+                }
+                width: 4 
+                hoverEnabled: true
+                visible: true
+                z: 999 
+
+                onEntered: {
+                    if (!sidebar.visible) {
+                        sidebar.show()
+                    }
+                }
+
+                onExited: {
+                    if (!sidebar.containsMouse) {
+                        sidebar.hide()
+                    }
+                }
+            }
+
+
             Notification {
                 id: notification
                 isTopBar: barWindow.anchors.top

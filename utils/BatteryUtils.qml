@@ -28,7 +28,7 @@ Item {
     }
 
     Timer {
-        interval: 200
+        interval: 2000 
         running: true
         repeat: true
         triggeredOnStart: true

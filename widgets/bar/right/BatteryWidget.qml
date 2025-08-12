@@ -20,7 +20,6 @@ Item {
     property bool isFull: batteryLevel >= 100
 
     MouseArea {
-        id: clickArea
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
@@ -31,7 +30,6 @@ Item {
     }
 
     Rectangle {
-        id: batteryBackground
         anchors.fill: parent
         radius: height / 2
         color: Appearance.background
@@ -41,23 +39,23 @@ Item {
         id: batteryCanvas
         anchors.fill: parent
 
-        property real level: batteryLevel
+        property real level: batteryWrapper.batteryLevel
         property real r: height / 2
         property int pointCount: 20
         property real time: 0
-        property real amplitude: batteryLevel < 100 && batteryLevel > 0 ? 3 : 0
-        property real speed: batteryLevel < 100 && batteryLevel > 0 ? 0.05 : 0
+        property real amplitude: 0
+        property real speed: 0
         property var phaseOffset: []
         property real blinkingOpacity: 1
         opacity: isFull ? blinkingOpacity : 1
-        visible: batteryLevel > 0 
+        visible: level > 0
 
         onPaint: {
             const ctx = getContext("2d")
             ctx.clearRect(0, 0, width, height)
 
             const baseLevel = Math.max(level, 0)
-            const w = Math.max(width * baseLevel / 100, r * 2) // jaga agar selalu minimal 1 kapsul
+            const w = Math.max(width * baseLevel / 100, r * 2)
             const h = height
             const a = amplitude
             const p = pointCount
@@ -69,13 +67,11 @@ Item {
             ctx.quadraticCurveTo(0, h, r, h)
 
             if (baseLevel >= 99) {
-                // FULL CAPSULE
                 ctx.lineTo(width - r, h)
                 ctx.quadraticCurveTo(width, h, width, h - r)
                 ctx.lineTo(width, r)
                 ctx.quadraticCurveTo(width, 0, width - r, 0)
             } else if (baseLevel > 0) {
-                // WITH WAVE
                 const yStep = h / p
                 let prevX = w
                 let prevY = h
@@ -94,7 +90,6 @@ Item {
                 ctx.lineTo(w, 0)
                 ctx.lineTo(r, 0)
             } else {
-                // batteryLevel 0 → hanya kapsul kosong
                 ctx.lineTo(r, 0)
             }
 
@@ -105,9 +100,17 @@ Item {
 
         Timer {
             interval: 16
-            running: batteryLevel > 0 && batteryLevel < 99
+            running: true 
             repeat: true
             onTriggered: {
+                if (batteryCanvas.level > 0 && batteryCanvas.level < 100) {
+                    batteryCanvas.amplitude = 3
+                    batteryCanvas.speed = 0.05
+                } else {
+                    batteryCanvas.amplitude = Math.max(0, batteryCanvas.amplitude - 0.05)
+                    batteryCanvas.speed = Math.max(0, batteryCanvas.speed - 0.001)
+                }
+
                 batteryCanvas.time += batteryCanvas.speed
                 batteryCanvas.requestPaint()
             }
@@ -126,9 +129,7 @@ Item {
         }
     }
 
-
     Text {
-        id: batteryText
         anchors.centerIn: parent
         text: isFull ? "Full" : batteryLevel + "%"
         color: Appearance.white
