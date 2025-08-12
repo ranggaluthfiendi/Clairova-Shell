@@ -9,8 +9,10 @@ Item {
     property int signalStrength: -2
     property string networkName: ""
     property bool enabled: false
+    property bool userToggled: false
 
     function toggle() {
+        userToggled = true
         toggleProc.command = ["sh", "-c", enabled ? "nmcli radio wifi off" : "nmcli radio wifi on"]
         toggleProc.running = true
         if (debug) console.log("[WifiUtils] Toggle WiFi:", toggleProc.command.join(" "))
@@ -23,10 +25,25 @@ Item {
             onStreamFinished: {
                 const val = parseInt(this.text.trim())
                 wifiUtils.signalStrength = isNaN(val) ? -2 : val
-                wifiUtils.enabled = !isNaN(val) && val >= 0
-
-                if (wifiUtils.debug) {
-                    console.log("[WifiUtils] Strength:", wifiUtils.signalStrength)
+                if (!wifiUtils.userToggled) {
+                    if (val >= 0) {
+                        if (!wifiUtils.enabled) {
+                            wifiUtils.enabled = true
+                            if (debug) console.log("[WifiUtils] Auto enabling WiFi due to signal")
+                            toggleProc.command = ["sh", "-c", "nmcli radio wifi on"]
+                            toggleProc.running = true
+                        }
+                    } else {
+                        if (wifiUtils.enabled) {
+                            wifiUtils.enabled = false
+                            if (debug) console.log("[WifiUtils] Auto disabling WiFi due to no signal")
+                            toggleProc.command = ["sh", "-c", "nmcli radio wifi off"]
+                            toggleProc.running = true
+                        }
+                    }
+                }
+                if (val < 10 && wifiUtils.enabled && !wifiUtils.userToggled) {
+                    if (debug) console.log("[WifiUtils] Signal weak but WiFi still enabled")
                 }
             }
         }
@@ -38,7 +55,7 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: {
                 wifiUtils.networkName = this.text.trim()
-                if (wifiUtils.debug) {
+                if (debug) {
                     console.log("[WifiUtils] Name:", wifiUtils.networkName)
                 }
             }
@@ -53,6 +70,9 @@ Item {
                 if (debug) console.log("[WifiUtils] Toggle done, refreshing...")
                 signalProc.running = true
                 nameProc.running = true
+                if (wifiUtils.userToggled) {
+                    Qt.callLater(() => wifiUtils.userToggled = false)
+                }
             }
         }
     }

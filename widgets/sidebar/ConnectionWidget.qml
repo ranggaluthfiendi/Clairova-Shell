@@ -16,9 +16,8 @@ Item {
         id: row
         anchors.fill: parent
         anchors.margins: 10 * Appearance.scaleFactor
-        spacing: 10 * Appearance.scaleFactor
+        spacing: 8 * Appearance.scaleFactor
 
-        // === Bluetooth Tile ===
         Rectangle {
             id: bluetoothTile
             Layout.fillWidth: true
@@ -37,7 +36,6 @@ Item {
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: 15 * Appearance.scaleFactor
-                spacing: 18 * Appearance.scaleFactor
 
                 Label {
                     text: bluetoothUtils.icon
@@ -75,7 +73,6 @@ Item {
             }
         }
 
-        // === WiFi Tile ===
         Rectangle {
             id: wifiTile
             Layout.fillWidth: true
@@ -94,7 +91,6 @@ Item {
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: 15 * Appearance.scaleFactor
-                spacing: 18 * Appearance.scaleFactor
 
                 Label {
                     text: {
