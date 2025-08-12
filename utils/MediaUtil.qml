@@ -22,21 +22,18 @@ Item {
     property string lastArtist: ""
 
     function formatSeconds(seconds) {
-        const days = Math.floor(seconds / 86400)
-        let remainder = seconds % 86400
-        const hours = Math.floor(remainder / 3600)
-        remainder = remainder % 3600
-        const mins = Math.floor(remainder / 60)
-        const secs = Math.floor(remainder % 60)
+        let hrs = Math.floor(seconds / 3600)
+        let mins = Math.floor((seconds % 3600) / 60)
+        let secs = Math.floor(seconds % 60)
 
-        const timeStr = [hours, mins, secs]
-            .map(v => v.toString().padStart(2, "0"))
-            .join(":")
+        let mm = mins.toString().padStart(2, "0")
+        let ss = secs.toString().padStart(2, "0")
 
-        if (days > 0) {
-            return days + (days > 1 ? " days " : " day ") + timeStr
+        if (hrs > 0) {
+            let hh = hrs.toString().padStart(2, "0")
+            return hh + ":" + mm + ":" + ss
         } else {
-            return timeStr
+            return mm + ":" + ss
         }
     }
 
@@ -49,7 +46,6 @@ Item {
 
         formattedTime = formatSeconds(position) + " ・ " + formatSeconds(duration)
     }
-
 
     Timer {
         interval: 1000
@@ -95,7 +91,7 @@ Item {
                         mediaUtil.position = 0
                         mediaUtil.duration = 1
                         mediaUtil.progress = 0
-                        mediaUtil.formattedTime = "00:00 / 00:00"
+                        mediaUtil.formattedTime = "00:00 ・ 00:00"
                         mediaUtil.lastTitle = newTitle
                         mediaUtil.lastArtist = newArtist
                         Qt.callLater(() => mediaUtil.justChangedTrack = false)
@@ -116,6 +112,7 @@ Item {
             }
         }
     }
+
     Process {
         id: statusProc
         command: ["playerctl", "-p", "plasma-browser-integration", "status"]
