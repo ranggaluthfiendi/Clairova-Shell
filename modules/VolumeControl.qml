@@ -50,7 +50,7 @@ PopupWindow {
     Item {
         id: wrapper
         width: parent.width
-        height: 260 * Appearance.scaleFactor
+        height: 320 * Appearance.scaleFactor
         y: volumePopup.contentY
 
         Rectangle {

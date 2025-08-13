@@ -41,7 +41,7 @@ PopupWindow {
     Item {
         id: wrapper
         width: parent.width
-        height: 300 * Appearance.scaleFactor
+        height: layout.implicitHeight
         y: settingPopup.contentY
 
         Rectangle {

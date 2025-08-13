@@ -41,7 +41,7 @@ ColumnLayout {
         id: sliderArea
         Layout.fillWidth: true
         Layout.margins: 8 * Appearance.scaleFactor
-        height: 6 * Appearance.scaleFactor
+        height: 12 * Appearance.scaleFactor
         radius: height / 2
         color: Appearance.background
         clip: true

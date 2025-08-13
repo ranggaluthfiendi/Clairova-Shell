@@ -10,7 +10,7 @@ import qs.modules
 Item {
     id: mixerInput
     width: parent.width
-    height: 100 * Appearance.scaleFactor
+    height: 80 * Appearance.scaleFactor
 
     required property PwNode node
 
@@ -155,7 +155,7 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 25 * Appearance.scaleFactor
+            Layout.preferredHeight: 18 * Appearance.scaleFactor
 
             Item {
                 id: volumeContainer

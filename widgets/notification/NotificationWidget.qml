@@ -94,7 +94,7 @@ Item {
             id: notificationList
             model: notificationUtil.notifications
             Layout.fillWidth: true
-            Layout.preferredHeight: 195 * Appearance.scaleFactor
+            Layout.preferredHeight: 450 * Appearance.scaleFactor
             
             spacing: 10 * Appearance.scaleFactor
             clip: true

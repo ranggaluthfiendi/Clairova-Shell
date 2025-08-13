@@ -16,6 +16,8 @@ import Quickshell.Hyprland
 Scope {
     id: bar
     property bool isTopBar: true
+    property bool sidebarLocked: false
+    property bool volumeLocked: false
 
     Variants {
         model: Quickshell.screens
@@ -47,13 +49,14 @@ Scope {
             }
 
             function toggleSidebar() {
-                if (sidebar.visible) {
+                if (sidebar.visible && bar.sidebarLocked) {
+                    bar.sidebarLocked = false
                     sidebar.hide()
-                    notification.hide()
+                } else if (sidebar.visible) {
+                    sidebar.hide()
                     volumePopup.hide()
                 } else {
                     sidebar.show()
-                    notification.show()
                     volumePopup.show()
                 }
             }
@@ -122,6 +125,7 @@ Scope {
                         if (notification.visible) notification.hide()
                         if (volumePopup.visible) volumePopup.hide()
                         sidebar.notifWidget.setToggled(false)
+                        bar.sidebarLocked = false
                     }
                 }
 
@@ -134,27 +138,52 @@ Scope {
                 id: edgeTrigger
                 anchors {
                     top: parent.top
-                    bottom: parent.bottom
                     right: parent.right
                 }
-                width: 4 
+                width: 40 * Appearance.scaleFactor
+                height: 40 * Appearance.scaleFactor
                 hoverEnabled: true
                 visible: true
-                z: 999 
+                z: 999
 
                 onEntered: {
-                    if (!sidebar.visible) {
-                        sidebar.show()
-                    }
+                    if (!sidebar.visible) sidebar.show()
+                    if (!volumePopup.visible) volumePopup.show()
                 }
 
                 onExited: {
-                    if (!sidebar.containsMouse) {
-                        sidebar.hide()
-                    }
+                    if (!bar.sidebarLocked && !sidebar.containsMouse) sidebar.hide()
+                    if (!bar.volumeLocked && !volumePopup.containsMouse) volumePopup.hide()
                 }
+
+                onClicked: {
+                    bar.sidebarLocked = !bar.sidebarLocked
+                    bar.volumeLocked = !bar.volumeLocked
+
+                    if (!bar.sidebarLocked) sidebar.hide()
+                    if (!bar.volumeLocked) volumePopup.hide()
+                }
+
+                cursorShape: Qt.PointingHandCursor
             }
 
+            VolumeControl {
+                id: volumePopup
+                isTopBar: barWindow.anchors.top
+                anchor.window: barWindow
+
+                implicitWidth: Math.min(
+                    barWindow.screen.width / 3,
+                    400 * Appearance.scaleFactor
+                )
+
+                anchor.rect.x: sidebar.anchor.rect.x - width - 10
+                anchor.rect.y: bar.isTopBar
+                    ? barWindow.height + 10
+                    : barWindow.height - height - 75
+
+                visible: false
+            }
 
             Notification {
                 id: notification
@@ -167,7 +196,11 @@ Scope {
                 )
 
                 anchor.rect.x: sidebar.anchor.rect.x - width - 10
-                anchor.rect.y: bar.isTopBar ? barWindow.height + 10 : barWindow.height - height - 75
+                anchor.rect.y: volumePopup.visible
+                    ? volumePopup.anchor.rect.y + volumePopup.height + 10
+                    : bar.isTopBar
+                        ? barWindow.height + 10
+                        : barWindow.height - height - 75
 
                 visible: false
             }
@@ -183,43 +216,15 @@ Scope {
                 )
 
                 anchor.rect.x: sidebar.anchor.rect.x - width - 10
-                anchor.rect.y: bar.isTopBar ? barWindow.height + 10 : barWindow.height - height - 75
+                anchor.rect.y: volumePopup.visible
+                    ? volumePopup.anchor.rect.y + volumePopup.height + 10
+                    : bar.isTopBar
+                        ? barWindow.height + 10
+                        : barWindow.height - height - 75
 
                 visible: false
             }
 
-            VolumeControl {
-                id: volumePopup
-                isTopBar: barWindow.anchors.top
-                anchor.window: barWindow
-
-                implicitWidth: Math.min(
-                    barWindow.screen.width / 3,
-                    400 * Appearance.scaleFactor
-                )
-
-                anchor.rect.x: sidebar.anchor.rect.x - width - 10
-                anchor.rect.y: {
-                    const padding = 10
-                    if (bar.isTopBar) {
-                        if (settingPopup.visible)
-                            return settingPopup.anchor.rect.y + settingPopup.height + padding
-                        else if (notification.visible)
-                            return notification.anchor.rect.y + notification.height + padding
-                        else
-                            return barWindow.height + padding
-                    } else {
-                        if (settingPopup.visible)
-                            return settingPopup.anchor.rect.y - volumePopup.height - padding
-                        else if (notification.visible)
-                            return notification.anchor.rect.y - volumePopup.height - padding
-                        else
-                            return barWindow.height - volumePopup.height - 75
-                    }
-                }
-
-                visible: false
-            }
 
             Rectangle {
                 id: barColor
