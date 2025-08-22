@@ -73,7 +73,7 @@ PopupWindow {
 
                     ProfileWidget {
                         id: profile
-                        Layout.topMargin: 15 * Appearance.scaleFactor
+                        Layout.topMargin: 10* Appearance.scaleFactor
                         Layout.preferredWidth: parent.width - (40 * Appearance.scaleFactor)
                         Layout.alignment: Qt.AlignHCenter
                     }

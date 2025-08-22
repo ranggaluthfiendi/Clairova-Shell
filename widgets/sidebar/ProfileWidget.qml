@@ -114,32 +114,32 @@ Item {
         RowLayout {
             spacing: 16
 
-            Item {
-                width: 20 * Appearance.scaleFactor
-                height: 20 * Appearance.scaleFactor
+            // Item {
+            //     width: 20 * Appearance.scaleFactor
+            //     height: 20 * Appearance.scaleFactor
 
-                property bool toggled: false
+            //     property bool toggled: false
 
-                Text {
-                    id: toggleText
-                    anchors.centerIn: parent
-                    text: parent.toggled ? "switch_right" : "switch_left"
-                    color: Appearance.white
-                    font.family: Appearance.materialSymbols
-                    font.pixelSize: 20 * Appearance.scaleFactor
-                    rotation: 90
-                }
+            //     Text {
+            //         id: toggleText
+            //         anchors.centerIn: parent
+            //         text: parent.toggled ? "switch_right" : "switch_left"
+            //         color: Appearance.white
+            //         font.family: Appearance.materialSymbols
+            //         font.pixelSize: 20 * Appearance.scaleFactor
+            //         rotation: 90
+            //     }
 
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        parent.toggled = !parent.toggled
-                        bar.isTopBar = parent.toggled
-                        barWindow.toggleBarPosition()
-                    }
-                }
-            }
+            //     MouseArea {
+            //         anchors.fill: parent
+            //         cursorShape: Qt.PointingHandCursor
+            //         onClicked: {
+            //             parent.toggled = !parent.toggled
+            //             bar.isTopBar = parent.toggled
+            //             barWindow.toggleBarPosition()
+            //         }
+            //     }
+            // }
 
             NotifWidget {
                 id: notifWidget

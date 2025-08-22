@@ -25,7 +25,12 @@ Item {
     function mediaNext()      { nextProc.running = true }
     function mediaPrev()      { prevProc.running = true }
 
+    Component.onCompleted: {
+        mediaUtil.loadMedia()
+    }
+
     Column {
+        id: contentLayout
         anchors.fill: parent
         spacing: 2
 
@@ -44,16 +49,17 @@ Item {
                 }
 
                 Image {
-                    id: cover
-                    source: mediaUtil.coverArt || ""
                     anchors.fill: parent
                     fillMode: Image.PreserveAspectCrop
+                    cache: false
+                    asynchronous: true
+                    source: mediaUtil.coverSource
                 }
 
                 Rectangle {
                     anchors.fill: parent
                     color: "#000000"
-                    opacity: 0.6
+                    opacity: 0.7
                 }
             }
         }
@@ -199,7 +205,7 @@ Item {
 
                     TextMetrics {
                         id: titleMetrics
-                        text: mediaUtil.title || "Unknown Title"
+                        text: mediaUtil.title || "No Media Found"
                         font.pixelSize: 14 * scaleFactor
                         font.bold: true
                     }
@@ -207,7 +213,7 @@ Item {
                     Text {
                         visible: titleMetrics.width <= parent.width
                         anchors.verticalCenter: parent.verticalCenter
-                        text: mediaUtil.title || "Unknown Title"
+                        text: mediaUtil.title || "No Media Found"
                         font.pixelSize: 14 * scaleFactor
                         font.bold: true
                         color: Appearance.white
@@ -227,13 +233,13 @@ Item {
                             x: parent.offset
 
                             Text {
-                                text: mediaUtil.title || "Unknown Title"
+                                text: mediaUtil.title || "No Media Found"
                                 font.pixelSize: 14 * scaleFactor
                                 font.bold: true
                                 color: Appearance.white
                             }
                             Text {
-                                text: mediaUtil.title || "Unknown Title"
+                                text: mediaUtil.title || "No Media Found"
                                 font.pixelSize: 14 * scaleFactor
                                 font.bold: true
                                 color: Appearance.white
@@ -257,14 +263,14 @@ Item {
 
                     TextMetrics {
                         id: artistMetrics
-                        text: mediaUtil.artist || "Unknown Artist"
+                        text: mediaUtil.artist || "Open music player app to start"
                         font.pixelSize: 12 * scaleFactor
                     }
 
                     Text {
                         visible: artistMetrics.width <= parent.width
                         anchors.verticalCenter: parent.verticalCenter
-                        text: mediaUtil.artist || "Unknown Artist"
+                        text: mediaUtil.artist || "Open music player app to start"
                         font.pixelSize: 12 * scaleFactor
                         color: Appearance.white
                         elide: Text.ElideRight
@@ -283,12 +289,12 @@ Item {
                             x: parent.offset
 
                             Text {
-                                text: mediaUtil.artist || "Unknown Artist"
+                                text: mediaUtil.artist || "Open music player app to start"
                                 font.pixelSize: 12 * scaleFactor
                                 color: Appearance.white
                             }
                             Text {
-                                text: mediaUtil.artist || "Unknown Artist"
+                                text: mediaUtil.artist || "Open music player app to start"
                                 font.pixelSize: 12 * scaleFactor
                                 color: Appearance.white
                             }
