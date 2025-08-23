@@ -8,4 +8,7 @@ import Quickshell
 
 ShellRoot {
     Bar {}
+    Screens {}
+    // Time {}
+    // Linux {}
 }

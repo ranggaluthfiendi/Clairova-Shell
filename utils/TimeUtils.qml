@@ -20,13 +20,7 @@ Item {
             const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
             const weekday = dayNames[now.getDay()]
 
-            const offset = now.getTimezoneOffset()
-            const zone = offset === -420 ? "WIB"
-                       : offset === -480 ? "WITA"
-                       : offset === -540 ? "WIT"
-                       : ""
-
-            timeLogic.time = `${weekday} ${day} • ${hours}:${minutes} ${zone}`
+            timeLogic.time = `${weekday} ${day} • ${hours}:${minutes}`
         }
     }
 }

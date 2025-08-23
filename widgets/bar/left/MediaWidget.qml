@@ -181,231 +181,231 @@ Item {
             }
         }
 
-        RowLayout {
-            id: expandedArea
-            property bool hiding: false
+        // RowLayout {
+        //     id: expandedArea
+        //     property bool hiding: false
 
-            width: mediaWidget.expanded ? implicitWidth : 0
-            opacity: mediaWidget.expanded ? 1 : 0
-            visible: mediaWidget.expanded || hiding
-            spacing: 8 * scaleFactor
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-            clip: true
+        //     width: mediaWidget.expanded ? implicitWidth : 0
+        //     opacity: mediaWidget.expanded ? 1 : 0
+        //     visible: mediaWidget.expanded || hiding
+        //     spacing: 8 * scaleFactor
+        //     Layout.fillWidth: true
+        //     Layout.alignment: Qt.AlignVCenter
+        //     clip: true
 
-            Behavior on width {
-                NumberAnimation {
-                    duration: 250
-                    easing.type: Easing.InOutQuad
-                    onFinished: {
-                        if (!mediaWidget.expanded) {
-                            expandedArea.hiding = false
-                            expandedArea.visible = false
-                        }
-                    }
-                }
-            }
+        //     Behavior on width {
+        //         NumberAnimation {
+        //             duration: 250
+        //             easing.type: Easing.InOutQuad
+        //             onFinished: {
+        //                 if (!mediaWidget.expanded) {
+        //                     expandedArea.hiding = false
+        //                     expandedArea.visible = false
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 250
-                    easing.type: Easing.InOutQuad
-                }
-            }
+        //     Behavior on opacity {
+        //         NumberAnimation {
+        //             duration: 250
+        //             easing.type: Easing.InOutQuad
+        //         }
+        //     }
 
-            Connections {
-                target: mediaWidget
-                function onExpandedChanged() {
-                    if (!mediaWidget.expanded) {
-                        expandedArea.hiding = true
-                    }
-                }
-            }
+        //     Connections {
+        //         target: mediaWidget
+        //         function onExpandedChanged() {
+        //             if (!mediaWidget.expanded) {
+        //                 expandedArea.hiding = true
+        //             }
+        //         }
+        //     }
 
-            ClippingWrapperRectangle {
-                width: 24 * scaleFactor
-                height: 24 * scaleFactor
-                radius: 4 * scaleFactor
+        //     ClippingWrapperRectangle {
+        //         width: 24 * scaleFactor
+        //         height: 24 * scaleFactor
+        //         radius: 4 * scaleFactor
 
-                Item {
-                    id: container
-                    anchors.fill: parent
-                    property bool hovered: false
+        //         Item {
+        //             id: container
+        //             anchors.fill: parent
+        //             property bool hovered: false
 
-                    Rectangle {
-                        anchors.fill: parent
-                        color: Appearance.primary
-                    }
+        //             Rectangle {
+        //                 anchors.fill: parent
+        //                 color: Appearance.primary
+        //             }
 
-                    Image {
-                        id: cover
-                        source: mediaUtil.coverArt || ""
-                        anchors.fill: parent
-                        fillMode: Image.PreserveAspectCrop
-                    }
-                }
-            }
+        //             Image {
+        //                 id: cover
+        //                 source: mediaUtil.coverArt || ""
+        //                 anchors.fill: parent
+        //                 fillMode: Image.PreserveAspectCrop
+        //             }
+        //         }
+        //     }
 
-            ColumnLayout {
-                spacing: 2 * scaleFactor
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter
+        //     ColumnLayout {
+        //         spacing: 2 * scaleFactor
+        //         Layout.fillWidth: true
+        //         Layout.alignment: Qt.AlignVCenter
 
-                TextMetrics {
-                    id: titleMetrics
-                    text: mediaUtil.title || "Unknown Title"
-                    font.pixelSize: 10 * scaleFactor
-                }
+        //         TextMetrics {
+        //             id: titleMetrics
+        //             text: mediaUtil.title || "Unknown Title"
+        //             font.pixelSize: 10 * scaleFactor
+        //         }
 
-                TextMetrics {
-                    id: artistMetrics
-                    text: mediaUtil.artist || "Unknown Artist"
-                    font.pixelSize: 9 * scaleFactor
-                }
+        //         TextMetrics {
+        //             id: artistMetrics
+        //             text: mediaUtil.artist || "Unknown Artist"
+        //             font.pixelSize: 9 * scaleFactor
+        //         }
 
-                Item {
-                    id: titleWrapper
-                    Layout.fillWidth: true
-                    height: 12 * scaleFactor
-                    clip: true
+        //         Item {
+        //             id: titleWrapper
+        //             Layout.fillWidth: true
+        //             height: 12 * scaleFactor
+        //             clip: true
 
-                    Text {
-                        id: titleText
-                        visible: titleMetrics.width <= titleWrapper.width
-                        text: mediaUtil.title || "Unknown Title"
-                        font.pixelSize: 10 * scaleFactor
-                        color: "white"
-                        anchors.verticalCenter: parent.verticalCenter
-                        elide: Text.ElideRight
-                    }
+        //             Text {
+        //                 id: titleText
+        //                 visible: titleMetrics.width <= titleWrapper.width
+        //                 text: mediaUtil.title || "Unknown Title"
+        //                 font.pixelSize: 10 * scaleFactor
+        //                 color: "white"
+        //                 anchors.verticalCenter: parent.verticalCenter
+        //                 elide: Text.ElideRight
+        //             }
 
-                    Item {
-                        id: titleMarquee
-                        visible: titleMetrics.width > titleWrapper.width
-                        anchors.fill: parent
-                        clip: true
-                        property real offset: 0
+        //             Item {
+        //                 id: titleMarquee
+        //                 visible: titleMetrics.width > titleWrapper.width
+        //                 anchors.fill: parent
+        //                 clip: true
+        //                 property real offset: 0
 
-                        Row {
-                            id: titleRow
-                            spacing: 40
-                            anchors.verticalCenter: parent.verticalCenter
-                            x: titleMarquee.offset
+        //                 Row {
+        //                     id: titleRow
+        //                     spacing: 40
+        //                     anchors.verticalCenter: parent.verticalCenter
+        //                     x: titleMarquee.offset
 
-                            Text {
-                                text: mediaUtil.title || "Unknown Title"
-                                font.pixelSize: 10 * scaleFactor
-                                color: "white"
-                            }
+        //                     Text {
+        //                         text: mediaUtil.title || "Unknown Title"
+        //                         font.pixelSize: 10 * scaleFactor
+        //                         color: "white"
+        //                     }
 
-                            Text {
-                                text: mediaUtil.title || "Unknown Title"
-                                font.pixelSize: 10 * scaleFactor
-                                color: "white"
-                            }
-                        }
+        //                     Text {
+        //                         text: mediaUtil.title || "Unknown Title"
+        //                         font.pixelSize: 10 * scaleFactor
+        //                         color: "white"
+        //                     }
+        //                 }
 
-                        NumberAnimation on offset {
-                            id: titleAnim
-                            from: 0
-                            to: -(titleMetrics.width + 40)
-                            duration: (titleMetrics.width + 40) * 40
-                            loops: Animation.Infinite
-                            running: titleMarquee.visible
-                        }
+        //                 NumberAnimation on offset {
+        //                     id: titleAnim
+        //                     from: 0
+        //                     to: -(titleMetrics.width + 40)
+        //                     duration: (titleMetrics.width + 40) * 40
+        //                     loops: Animation.Infinite
+        //                     running: titleMarquee.visible
+        //                 }
 
-                        Component.onCompleted: if (titleMarquee.visible) titleAnim.restart()
-                    }
-                }
+        //                 Component.onCompleted: if (titleMarquee.visible) titleAnim.restart()
+        //             }
+        //         }
 
-                Item {
-                    id: artistWrapper
-                    Layout.fillWidth: true
-                    height: 11 * scaleFactor
-                    clip: true
+        //         Item {
+        //             id: artistWrapper
+        //             Layout.fillWidth: true
+        //             height: 11 * scaleFactor
+        //             clip: true
 
-                    Text {
-                        id: artistText
-                        visible: artistMetrics.width <= artistWrapper.width
-                        text: mediaUtil.artist || "Unknown Artist"
-                        font.pixelSize: 9 * scaleFactor
-                        color: "#aaa"
-                        anchors.verticalCenter: parent.verticalCenter
-                        elide: Text.ElideRight
-                    }
+        //             Text {
+        //                 id: artistText
+        //                 visible: artistMetrics.width <= artistWrapper.width
+        //                 text: mediaUtil.artist || "Unknown Artist"
+        //                 font.pixelSize: 9 * scaleFactor
+        //                 color: "#aaa"
+        //                 anchors.verticalCenter: parent.verticalCenter
+        //                 elide: Text.ElideRight
+        //             }
 
-                    Item {
-                        id: artistMarquee
-                        visible: artistMetrics.width > artistWrapper.width
-                        anchors.fill: parent
-                        clip: true
-                        property real offset: 0
+        //             Item {
+        //                 id: artistMarquee
+        //                 visible: artistMetrics.width > artistWrapper.width
+        //                 anchors.fill: parent
+        //                 clip: true
+        //                 property real offset: 0
 
-                        Row {
-                            id: artistRow
-                            spacing: 40
-                            anchors.verticalCenter: parent.verticalCenter
-                            x: artistMarquee.offset
+        //                 Row {
+        //                     id: artistRow
+        //                     spacing: 40
+        //                     anchors.verticalCenter: parent.verticalCenter
+        //                     x: artistMarquee.offset
 
-                            Text {
-                                text: mediaUtil.artist || "Unknown Artist"
-                                font.pixelSize: 9 * scaleFactor
-                                color: "#aaa"
-                            }
+        //                     Text {
+        //                         text: mediaUtil.artist || "Unknown Artist"
+        //                         font.pixelSize: 9 * scaleFactor
+        //                         color: "#aaa"
+        //                     }
 
-                            Text {
-                                text: mediaUtil.artist || "Unknown Artist"
-                                font.pixelSize: 9 * scaleFactor
-                                color: "#aaa"
-                            }
-                        }
+        //                     Text {
+        //                         text: mediaUtil.artist || "Unknown Artist"
+        //                         font.pixelSize: 9 * scaleFactor
+        //                         color: "#aaa"
+        //                     }
+        //                 }
 
-                        NumberAnimation on offset {
-                            id: artistAnim
-                            from: 0
-                            to: -(artistMetrics.width + 40)
-                            duration: (artistMetrics.width + 40) * 40
-                            loops: Animation.Infinite
-                            running: artistMarquee.visible
-                        }
+        //                 NumberAnimation on offset {
+        //                     id: artistAnim
+        //                     from: 0
+        //                     to: -(artistMetrics.width + 40)
+        //                     duration: (artistMetrics.width + 40) * 40
+        //                     loops: Animation.Infinite
+        //                     running: artistMarquee.visible
+        //                 }
 
-                        Component.onCompleted: if (artistMarquee.visible) artistAnim.restart()
-                    }
-                }
-            }
+        //                 Component.onCompleted: if (artistMarquee.visible) artistAnim.restart()
+        //             }
+        //         }
+        //     }
 
-            RowLayout {
-                spacing: 6 * scaleFactor
-                Layout.alignment: Qt.AlignVCenter
+        //     RowLayout {
+        //         spacing: 6 * scaleFactor
+        //         Layout.alignment: Qt.AlignVCenter
 
-                Repeater {
-                    model: [
-                        { icon: "skip_previous", action: mediaPrev },
-                        { icon: mediaUtil.isPlaying ? "pause" : "resume", action: mediaPlayPause },
-                        { icon: "skip_next", action: mediaNext }
-                    ]
+        //         Repeater {
+        //             model: [
+        //                 { icon: "skip_previous", action: mediaPrev },
+        //                 { icon: mediaUtil.isPlaying ? "pause" : "resume", action: mediaPlayPause },
+        //                 { icon: "skip_next", action: mediaNext }
+        //             ]
 
-                    delegate: Item {
-                        width: 20 * scaleFactor
-                        height: 20 * scaleFactor
+        //             delegate: Item {
+        //                 width: 20 * scaleFactor
+        //                 height: 20 * scaleFactor
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData.icon
-                            font.family: Appearance.materialSymbols
-                            font.pixelSize: 16 * scaleFactor
-                            color: "white"
-                        }
+        //                 Text {
+        //                     anchors.centerIn: parent
+        //                     text: modelData.icon
+        //                     font.family: Appearance.materialSymbols
+        //                     font.pixelSize: 16 * scaleFactor
+        //                     color: "white"
+        //                 }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: modelData.action()
-                            cursorShape: Qt.PointingHandCursor
-                        }
-                    }
-                }
-            }
-        }
+        //                 MouseArea {
+        //                     anchors.fill: parent
+        //                     onClicked: modelData.action()
+        //                     cursorShape: Qt.PointingHandCursor
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 }    
 
