@@ -18,6 +18,8 @@ Scope {
     property bool isTopBar: true
     property bool sidebarLocked: false
     property bool volumeLocked: false
+    signal requestLock()
+
 
     Variants {
         model: Quickshell.screens
@@ -132,6 +134,7 @@ Scope {
                 onRequestResetNotifToggled: {
                     sidebar.notifWidget.setToggled(false)
                 }
+                onRequestLock: bar.requestLock()
             }
 
             MouseArea {
@@ -245,7 +248,7 @@ Scope {
 
                     IndicatorWidget {}
                     SpeedWidget {}
-
+                    TimeWidget {}
                     SystemWidget {
                         onRequestSidebarToggle: toggleSidebar()
                     }

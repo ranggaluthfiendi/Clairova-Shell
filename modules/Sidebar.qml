@@ -18,6 +18,8 @@ PopupWindow {
     
 
     signal requestResetNotifToggled()
+    signal requestLock()
+
 
     property alias notifWidget: profile.notifWidget
 
@@ -76,6 +78,8 @@ PopupWindow {
                         Layout.topMargin: 10* Appearance.scaleFactor
                         Layout.preferredWidth: parent.width - (40 * Appearance.scaleFactor)
                         Layout.alignment: Qt.AlignHCenter
+
+                        onRequestLock: popup.requestLock()
                     }
 
                     ConnectionWidget {}

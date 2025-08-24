@@ -17,6 +17,7 @@ Item {
     ProfileUtil { id: profileUtil }
 
     property alias notifWidget: notifWidget
+    signal requestLock()
 
     RowLayout {
         anchors.fill: parent
@@ -178,7 +179,7 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        console.log("Power clicked")
+                        onClicked: requestLock()
                     }
                 }
 

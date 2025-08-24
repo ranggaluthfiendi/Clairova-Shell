@@ -13,9 +13,10 @@ Item {
     id: mediaWidget
     property real scaleFactor: Appearance.scaleFactor
     property bool expanded: false
+    property real iconSize: 24 * scaleFactor
     Layout.leftMargin: 5 * Appearance.scaleFactor
 
-    width: expanded ? 250 * scaleFactor : 40 * scaleFactor
+    // width: expanded ? 250 * scaleFactor : 40 * scaleFactor
     height: 40 * scaleFactor
 
     MediaUtil { id: mediaUtil }
@@ -47,8 +48,8 @@ Item {
         anchors.fill: parent
 
         Item {
-            width: 24 * scaleFactor
-            height: 24 * scaleFactor
+            width: mediaWidget.iconSize * scaleFactor
+            height: mediaWidget.iconSize * scaleFactor
 
             Rectangle {
                 anchors.fill: parent

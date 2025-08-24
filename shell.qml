@@ -5,10 +5,29 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import Quickshell
-
+import Quickshell.Wayland
 ShellRoot {
-    Bar {}
+    Bar {onRequestLock: lock.locked = true}
     Screens {}
-    // Time {}
-    // Linux {}
+
+    LockContext {
+		id: lockContext
+
+		onUnlocked: {
+			lock.locked = false;
+		}
+	}
+
+	WlSessionLock {
+		id: lock
+
+		locked: true
+
+		WlSessionLockSurface {
+			LockSurface {
+				anchors.fill: parent
+				context: lockContext
+			}
+		}
+	}
 }

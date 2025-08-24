@@ -21,7 +21,7 @@
 1. Create power menu
 
 # lock screen
-1. Create lock screen
+1. Create lock screen (Done)
 
 # make installation
 1. For Arch user

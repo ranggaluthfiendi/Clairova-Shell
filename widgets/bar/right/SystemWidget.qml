@@ -8,14 +8,18 @@ import qs.widgets.bar.right
 Rectangle {
     id: systemWrapper
     radius: 6 * Appearance.scaleFactor
-    color: pressed ? Appearance.background : "transparent"
+    color: isInBar
+           ? (pressed ? Appearance.background : "transparent")
+           : "transparent"
+
+    property bool isInBar: true   // default true, kalau di screen set jadi false
+    property bool pressed: false
+
     Layout.fillHeight: true
     Layout.minimumWidth: iconRow.implicitWidth + 8 * Appearance.scaleFactor
     Layout.maximumWidth: iconRow.implicitWidth + 8 * Appearance.scaleFactor
 
     signal requestSidebarToggle()
-
-    property bool pressed: false
 
     Behavior on color {
         ColorAnimation { duration: 150 }
@@ -25,8 +29,7 @@ Rectangle {
         id: iconRow
         anchors.fill: parent
         anchors.rightMargin: 12 * Appearance.scaleFactor
-        TimeWidget {}
-        VolumeWidget{}
+        VolumeWidget {}
         BluetoothWidget {}
         WifiWidget {}
         BatteryWidget {}
@@ -35,10 +38,10 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        onPressed: systemWrapper.pressed = true
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: systemWrapper.isInBar ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onPressed: if (systemWrapper.isInBar) systemWrapper.pressed = true
         onReleased: {
-            systemWrapper.pressed = false
+            if (systemWrapper.isInBar) systemWrapper.pressed = false
             systemWrapper.requestSidebarToggle()
         }
     }
