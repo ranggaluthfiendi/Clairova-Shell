@@ -134,7 +134,25 @@ Scope {
                 onRequestResetNotifToggled: {
                     sidebar.notifWidget.setToggled(false)
                 }
-                onRequestLock: bar.requestLock()
+                onRequestLock: {
+                    if (sidebar.visible) {
+                        sidebar.hide()
+                        bar.sidebarLocked = false
+                    }
+                    if (volumePopup.visible) {
+                        volumePopup.hide()
+                        bar.volumeLocked = false
+                    }
+                    if (notification.visible) {
+                        notification.hide()
+                        sidebar.notifWidget.setToggled(false)
+                    }
+                    if (settingPopup.visible) {
+                        settingPopup.hide()
+                    }
+
+                    bar.requestLock()
+                }
             }
 
             MouseArea {

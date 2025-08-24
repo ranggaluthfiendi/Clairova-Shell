@@ -29,7 +29,7 @@ Item {
         id: clickArea
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        // cursorShape: Qt.PointingHandCursor
 
         onClicked: {
             wifiWidget.toggled = !wifiWidget.toggled

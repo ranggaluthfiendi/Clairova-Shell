@@ -12,7 +12,7 @@ Rectangle {
            ? (pressed ? Appearance.background : "transparent")
            : "transparent"
 
-    property bool isInBar: true   // default true, kalau di screen set jadi false
+    property bool isInBar: true 
     property bool pressed: false
 
     Layout.fillHeight: true

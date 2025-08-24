@@ -179,7 +179,7 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        onClicked: requestLock()
+                        requestLock()
                     }
                 }
 

@@ -12,6 +12,7 @@ import qs.utils
 import qs.widgets.bar.left
 import qs.widgets.bar.right
 import QtCore
+import qs.widgets.sidebar
 
 import Quickshell.Services.Pipewire
 
@@ -158,9 +159,6 @@ Rectangle {
         anchors.rightMargin: 620 * Appearance.scaleFactor
 
         opacity: 0
-        
-        SpeedWidget {}
-        Item { Layout.fillWidth: true }
         IndicatorWidget {}
         Item { Layout.fillWidth: true }
         SystemWidget {isInBar: false}
@@ -259,7 +257,7 @@ Rectangle {
             id: bottomColumn
             spacing: 6
             opacity: 0
-            Layout.topMargin: 100 * Appearance.scaleFactor
+            // Layout.topMargin: 100 * Appearance.scaleFactor
             SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 1000; easing.type: Easing.OutCubic } }
 
             RowLayout {
@@ -307,7 +305,7 @@ Rectangle {
                     SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 500; easing.type: Easing.OutQuad } }
 
                     Item {
-                        width: 330 * Appearance.scaleFactor
+                        width: 200 * Appearance.scaleFactor
                         height: 16 * Appearance.scaleFactor
                         clip: true
 
@@ -381,22 +379,97 @@ Rectangle {
                 }
 
                 Row {
-                    x : 1200
-                    SequentialAnimation on x { NumberAnimation { to: 850; duration: 800; easing.type: Easing.OutCubic } }
-
+                    x: 1200
                     spacing: 25 * Appearance.scaleFactor
-                    Item { width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor;
+
+                    Item {
+                        width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor
                         Text { anchors.centerIn: parent; text: "skip_previous"; font.family: Appearance.materialSymbols; font.pixelSize: 18*Appearance.scaleFactor; color: Appearance.white }
-                        MouseArea { anchors.fill: parent; onClicked: mediaPrev(); cursorShape: Qt.PointingHandCursor }
+                        MouseArea { 
+                            anchors.fill: parent
+                            onClicked: {
+                                mediaPrev()
+                                // reset opacity & fade
+                                mediaColumn.opacity = 0
+                                fadeAnim.start()
+                                // reset y & slide-in lagi
+                                mediaColumn.y = 200
+                                yAnim.start()
+                            }
+                            cursorShape: Qt.PointingHandCursor 
+                        }
                     }
-                    Item { width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor;
+
+                    Item {
+                        width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor
                         Text { anchors.centerIn: parent; text: mediaUtil.isPlaying ? "pause" : "resume"; font.family: Appearance.materialSymbols; font.pixelSize: 18*Appearance.scaleFactor; color: Appearance.white }
                         MouseArea { anchors.fill: parent; onClicked: mediaPlayPause(); cursorShape: Qt.PointingHandCursor }
                     }
-                    Item { width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor;
+
+                    Item {
+                        width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor
                         Text { anchors.centerIn: parent; text: "skip_next"; font.family: Appearance.materialSymbols; font.pixelSize: 18*Appearance.scaleFactor; color: Appearance.white }
-                        MouseArea { anchors.fill: parent; onClicked: mediaNext(); cursorShape: Qt.PointingHandCursor }
+                        MouseArea { 
+                            anchors.fill: parent
+                            onClicked: {
+                                mediaNext()
+                                mediaColumn.opacity = 0
+                                fadeAnim.start()
+                                mediaColumn.y = 200
+                                yAnim.start()
+                            } 
+                            cursorShape: Qt.PointingHandCursor 
+                        }
                     }
+}
+
+            }
+            ColumnLayout {
+                id: mediaColumn
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: 200
+                opacity: 1
+
+                Layout.topMargin: 50 * Appearance.scaleFactor
+
+                SequentialAnimation {
+                    id: yAnim
+                    running: true
+                    NumberAnimation { target: mediaColumn; property: "y"; from: 200; to: 100; duration: 800; easing.type: Easing.OutCubic }
+                }
+
+                ClippingWrapperRectangle {
+                    width: 300 * Appearance.scaleFactor
+                    height: 180 * Appearance.scaleFactor
+                    radius: 12 * Appearance.scaleFactor
+
+                    Item {
+                        id: container
+                        anchors.fill: parent
+
+                        Rectangle { anchors.fill: parent; color: Appearance.primary }
+
+                        Image {
+                            anchors.fill: parent
+                            fillMode: Image.PreserveAspectCrop
+                            cache: false
+                            asynchronous: true
+                            source: mediaUtil.coverSource
+                        }
+
+                        Rectangle { anchors.fill: parent; color: "#000000"; opacity: 0.2 }
+                    }
+                }
+
+                NumberAnimation {
+                    id: fadeAnim
+                    target: mediaColumn
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 600
+                    easing.type: Easing.OutCubic
+                    running: false
                 }
             }
         }
