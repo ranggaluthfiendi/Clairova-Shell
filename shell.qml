@@ -6,28 +6,37 @@ import QtQuick.Layouts
 import QtQuick.Window
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland 
+
 ShellRoot {
-    Bar {onRequestLock: lock.locked = true}
+    Bar {
+        id: topBar
+        onRequestLock: lock.locked = true
+    }
     Screens {}
 
     LockContext {
-		id: lockContext
+        id: lockContext
+        onUnlocked: lock.locked = false
+    }
 
-		onUnlocked: {
-			lock.locked = false;
-		}
-	}
+    WlSessionLock {
+        id: lock
+        locked: true
 
-	WlSessionLock {
-		id: lock
+        WlSessionLockSurface {
+            LockSurface {
+                anchors.fill: parent
+                context: lockContext
+            }
+        }
+    }
 
-		locked: true
-
-		WlSessionLockSurface {
-			LockSurface {
-				anchors.fill: parent
-				context: lockContext
-			}
-		}
-	}
+    GlobalShortcut {
+        id: toggleLockShortcut
+        appid: "quickshell"
+        name: "toggle-lock"
+        description: "Toggle lockscreen"
+        onPressed: lock.locked = !lock.locked
+    }
 }
