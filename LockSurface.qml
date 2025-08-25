@@ -155,8 +155,8 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.topMargin: 40 * Appearance.scaleFactor
-        anchors.leftMargin: 620 * Appearance.scaleFactor
-        anchors.rightMargin: 620 * Appearance.scaleFactor
+        anchors.leftMargin: 615 * Appearance.scaleFactor
+        anchors.rightMargin: 720 * Appearance.scaleFactor
 
         opacity: 0
         IndicatorWidget {}
@@ -379,8 +379,9 @@ Rectangle {
                 }
 
                 Row {
-                    x: 1200
+                    x: 900
                     spacing: 25 * Appearance.scaleFactor
+                    SequentialAnimation on x { NumberAnimation { to: 700; duration: 800; easing.type: Easing.OutCubic } }
 
                     Item {
                         width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor
@@ -421,8 +422,7 @@ Rectangle {
                             cursorShape: Qt.PointingHandCursor 
                         }
                     }
-}
-
+                }
             }
             ColumnLayout {
                 id: mediaColumn
@@ -443,6 +443,9 @@ Rectangle {
                     height: 180 * Appearance.scaleFactor
                     radius: 12 * Appearance.scaleFactor
 
+                    opacity: mediaUtil.title && mediaUtil.title !== "No Media Found" ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
+
                     Item {
                         id: container
                         anchors.fill: parent
@@ -456,6 +459,7 @@ Rectangle {
                             asynchronous: true
                             source: mediaUtil.coverSource
                         }
+
 
                         Rectangle { anchors.fill: parent; color: "#000000"; opacity: 0.2 }
                     }
