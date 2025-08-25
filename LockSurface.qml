@@ -151,12 +151,13 @@ Rectangle {
 
     RowLayout{
         id: topBar
-        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.topMargin: 40 * Appearance.scaleFactor
-        anchors.leftMargin: 615 * Appearance.scaleFactor
-        anchors.rightMargin: 720 * Appearance.scaleFactor
+        anchors.margins: 80
+        // anchors.topMargin: 40 
+        // anchors.leftMargin: 615 
+        // anchors.rightMargin: 720 
 
         opacity: 0
         IndicatorWidget {}
@@ -182,7 +183,13 @@ Rectangle {
             opacity: 0
             scale: 1.0
 
-            Image { anchors.fill: parent; source: profileUtil.profileImage; fillMode: Image.PreserveAspectCrop; smooth: true }
+            Image { 
+                source: profileUtil.profileImage
+                fillMode: Image.PreserveAspectCrop
+                smooth: true
+                sourceSize.width: parent.width
+                sourceSize.height: parent.height 
+            }
 
             SequentialAnimation on y { NumberAnimation { to: 0; duration: 800; easing.type: Easing.OutCubic } }
             SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 800; easing.type: Easing.OutCubic } }
@@ -196,7 +203,7 @@ Rectangle {
         Label {
             id: usernameLabel
             text: profileUtil.username
-            font.pointSize: 28 * Appearance.scaleFactor
+            font.pointSize: 28 
             color: Appearance.white
             font.family: Appearance.bitcountFont
             horizontalAlignment: Text.AlignHCenter
@@ -208,8 +215,8 @@ Rectangle {
         TextField {
             id: passwordBox
             anchors.horizontalCenter: parent.horizontalCenter
-            implicitWidth: 300 * Appearance.scaleFactor
-            implicitHeight: 50
+            implicitWidth: 300 
+            implicitHeight: 50 
             padding: 12
             focus: true
             enabled: !root.context.unlockInProgress
@@ -219,13 +226,13 @@ Rectangle {
             opacity: 0
 
             background: Rectangle {
-                radius: 25
+                radius: 25 
                 border.color: passwordBox.activeFocus ? Appearance.primary : Appearance.background
                 border.width: 2
                 color: "transparent"
             }
 
-            font.pointSize: 16 * Appearance.scaleFactor
+            font.pointSize: 16 
             color: Appearance.white
             placeholderText: "Enter password…"
             placeholderTextColor: Appearance.white
