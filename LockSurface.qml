@@ -155,9 +155,6 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 80
-        // anchors.topMargin: 40 
-        // anchors.leftMargin: 615 
-        // anchors.rightMargin: 720 
 
         opacity: 0
         IndicatorWidget {}
@@ -264,7 +261,6 @@ Rectangle {
             id: bottomColumn
             spacing: 6
             opacity: 0
-            // Layout.topMargin: 100 * Appearance.scaleFactor
             SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 1000; easing.type: Easing.OutCubic } }
 
             RowLayout {
@@ -397,10 +393,8 @@ Rectangle {
                             anchors.fill: parent
                             onClicked: {
                                 mediaPrev()
-                                // reset opacity & fade
                                 mediaColumn.opacity = 0
                                 fadeAnim.start()
-                                // reset y & slide-in lagi
                                 mediaColumn.y = 200
                                 yAnim.start()
                             }

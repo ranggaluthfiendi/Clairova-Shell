@@ -26,7 +26,6 @@ Item {
         id: clickArea
         anchors.fill: parent
         hoverEnabled: true
-        // cursorShape: Qt.PointingHandCursor
 
         onClicked: {
             timeWrapper.toggled = !timeWrapper.toggled

@@ -202,7 +202,6 @@ Item {
                     }
                 }
 
-                // Calendar grid
                 GridLayout {
                     Layout.leftMargin: 3 * Appearance.scaleFactor
                     id: calendarGrid

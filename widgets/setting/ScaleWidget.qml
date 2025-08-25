@@ -12,7 +12,7 @@ ColumnLayout {
     spacing: 6 * Appearance.scaleFactor
 
     property real scaleValue: util.currentScale
-    property real pendingScale: util.currentScale // untuk slider
+    property real pendingScale: util.currentScale
 
     ScaleUtil { id: util }
 
@@ -78,7 +78,6 @@ ColumnLayout {
 
             onMoved: {
                 pendingScale = value
-                // Jangan langsung apply
             }
         }
     }

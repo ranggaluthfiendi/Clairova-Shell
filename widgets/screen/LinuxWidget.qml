@@ -19,8 +19,6 @@ Item {
         x: 0
         y: 0
 
-        // --------------------------------------------------
-        // Set defaultX/Y terlebih dahulu, lalu load posisi
         Component.onCompleted: {
             Qt.callLater(() => {
                 linuxUtil.defaultX = mainWindow.width - linuxContainer.width
@@ -29,8 +27,6 @@ Item {
             })
         }
 
-        // --------------------------------------------------
-        // Update posisi ketika posisi dari file JSON sudah siap
         Connections {
             target: linuxUtil
             onPositionLoaded: {
@@ -39,7 +35,6 @@ Item {
             }
         }
 
-        // --------------------------------------------------
         Column {
             anchors.centerIn: parent
             spacing: 4 * Appearance.scaleFactor
@@ -63,7 +58,6 @@ Item {
             }
         }
 
-        // --------------------------------------------------
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
@@ -86,7 +80,7 @@ Item {
 
                 const now = Date.now()
                 if (now - lastClickTime < 300) {
-                    linuxUtil.resetPosition(linuxContainer) // kirim container agar clamp
+                    linuxUtil.resetPosition(linuxContainer)
                 }
                 lastClickTime = now
             }
@@ -105,7 +99,6 @@ Item {
         }
     }
 
-    // --------------------------------------------------
     LinuxUtil {
         id: linuxUtil
         defaultX: 0

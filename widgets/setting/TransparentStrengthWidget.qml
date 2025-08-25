@@ -17,7 +17,6 @@ ColumnLayout {
 
     Connections {
         target: util
-        // onStrengthLoaded: strength = strengthValue
     }
 
     RowLayout {

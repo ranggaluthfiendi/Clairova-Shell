@@ -24,7 +24,6 @@ Item {
         id: clickArea
         anchors.fill: parent
         hoverEnabled: true
-        // cursorShape: Qt.PointingHandCursor
 
         onClicked: {
             bluetoothWidget.toggled = !bluetoothWidget.toggled

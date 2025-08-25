@@ -12,6 +12,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import Quickshell.Wayland
 
 Scope {
     id: bar
@@ -19,7 +20,7 @@ Scope {
     property bool sidebarLocked: false
     property bool volumeLocked: false
     signal requestLock()
-
+    property var barWindowRef
 
     Variants {
         model: Quickshell.screens
@@ -31,12 +32,26 @@ Scope {
             screen: modelData
             implicitHeight: 40 * Appearance.scaleFactor
             property bool notifOrSettingOpened: false
+            
+            property int currentLayer: WlrLayer.Top
+            WlrLayershell.layer: currentLayer
 
             anchors {
                 top: bar.isTopBar
                 bottom: !bar.isTopBar
                 left: true
                 right: true
+            }
+
+            Component.onCompleted: {
+                bar.barWindowRef = barWindow
+            }
+
+            Behavior on anchors.top {
+                NumberAnimation { duration: 800; easing.type: Easing.InOutQuad }
+            }
+            Behavior on anchors.bottom {
+                NumberAnimation { duration: 800; easing.type: Easing.InOutQuad }
             }
 
             function toggleBarPosition() {
@@ -271,6 +286,25 @@ Scope {
                         onRequestSidebarToggle: toggleSidebar()
                     }
                 }
+            }
+        }
+    }
+    GlobalShortcut {
+        id: toggleLayerShortcut
+        appid: "quickshell"
+        name: "toggle-bar-layer"
+        description: "Toggle bar layer between Top and Overlay"
+
+        onPressed: {
+            if (bar.barWindowRef) {
+                if (bar.barWindowRef.currentLayer === WlrLayer.Top)
+                    bar.barWindowRef.currentLayer = WlrLayer.Overlay
+                else
+                    bar.barWindowRef.currentLayer = WlrLayer.Top
+                Qt.callLater(() => {
+                    bar.barWindowRef.visible = false
+                    Qt.callLater(() => bar.barWindowRef.visible = true)
+                })
             }
         }
     }
