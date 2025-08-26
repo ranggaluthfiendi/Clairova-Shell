@@ -160,93 +160,231 @@ Rectangle {
         property real initialY: y
         y: parent.height + height
 
-        Rectangle {
-            id: powerButton
-            width: 32 * Appearance.scaleFactor
-            height: 32 * Appearance.scaleFactor
-            radius: 10
-            color: Appearance.primary
-            scale: 1.0
+        ColumnLayout {
+            spacing: 12
 
-            Behavior on scale {
-                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            Rectangle {
+                id: powerButton
+                width: 32 * Appearance.scaleFactor
+                height: 32 * Appearance.scaleFactor
+                radius: 10
+                color: Appearance.primary
+                scale: 1.0
+
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+                Process { id: powerProc; command: [] }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+                    onEntered: powerButton.scale = 1.2
+                    onExited: powerButton.scale = 1.0
+                    onClicked: {
+                        confirmDialogPower.visible = !confirmDialogPower.visible
+                        confirmDialogReboot.visible = false
+                    }
+                }
+
+                Text { anchors.centerIn: parent; text: "power_settings_new"; color: Appearance.color; font.family: Appearance.materialSymbols; font.pixelSize: 20 * Appearance.scaleFactor }
+
+                Rectangle {
+                    id: confirmDialogPower
+                    visible: false
+                    width: 85
+                    height: 30
+                    radius: 8
+                    color: powerButton.color
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.right
+                    anchors.leftMargin: 8
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 6
+                        spacing: 4
+
+                        Text { 
+                            text: "Shutdown?"
+                            color: Appearance.color
+                            anchors.verticalCenter: parent.verticalCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.bold: true
+                            Layout.rightMargin: 8
+                        }
+
+                        Rectangle {
+                            width: 40
+                            height: 28
+                            radius: 6
+                            color: powerButton.color
+                            border.color: Appearance.color
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text { 
+                                anchors.centerIn: parent
+                                font.family: Appearance.materialSymbols
+                                text: "check"
+                                color: Appearance.color
+                                font.bold: true
+                            }
+
+                            MouseArea { 
+                                anchors.fill: parent
+                                onClicked: { 
+                                    powerProc.command = ["sh", "-c", "systemctl poweroff"]
+                                    powerProc.running = true
+                                    confirmDialogPower.visible = false
+                                }
+                                hoverEnabled: true
+                                onEntered: parent.opacity = 0.8
+                                onExited: parent.opacity = 1.0
+                                cursorShape: Qt.PointingHandCursor
+                            }
+                        }
+
+                        Rectangle {
+                            width: 40
+                            height: 28
+                            radius: 6
+                            color: powerButton.color
+                            border.color: Appearance.color
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text { 
+                                anchors.centerIn: parent
+                                font.family: Appearance.materialSymbols
+                                text: "close"
+                                color: Appearance.color
+                                font.bold: true
+                            }
+
+                            MouseArea { 
+                                anchors.fill: parent
+                                onClicked: confirmDialogPower.visible = false
+                                hoverEnabled: true
+                                onEntered: parent.opacity = 0.8
+                                onExited: parent.opacity = 1.0
+                                cursorShape: Qt.PointingHandCursor
+                            }
+                        }
+                    }
+                }
             }
 
-            Process {
-                id: powerProc
-                command: []
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                hoverEnabled: true
-
-                onClicked: {
-                    powerProc.command = ["sh", "-c", "systemctl poweroff"]
-                    powerProc.running = true
-                }
-                onEntered: {
-                    powerButton.scale = 1.2
-                }
-                onExited: {
-                    powerButton.scale = 1.0
-                }
-            }
-
-            Text {
-                id: powerIcon
-                anchors.centerIn: parent
-                text: "power_settings_new"
+            Rectangle {
+                id: rebootButton
+                width: 32 * Appearance.scaleFactor
+                height: 32 * Appearance.scaleFactor
+                radius: 10
                 color: Appearance.color
-                font.family: Appearance.materialSymbols
-                font.pixelSize: 20 * Appearance.scaleFactor
+                scale: 1.0
+
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+                Process { id: rebootProc; command: [] }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+                    onEntered: rebootButton.scale = 1.2
+                    onExited: rebootButton.scale = 1.0
+                    onClicked: {
+                        confirmDialogReboot.visible = !confirmDialogReboot.visible
+                        confirmDialogPower.visible = false
+                    }
+                }
+
+                Text { anchors.centerIn: parent; text: "restart_alt"; color: Appearance.white; font.family: Appearance.materialSymbols; font.pixelSize: 20 * Appearance.scaleFactor }
+
+                Rectangle {
+                    id: confirmDialogReboot
+                    visible: false
+                    width: 62
+                    height: 30
+                    radius: 8
+                    color: rebootButton.color
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.right
+                    anchors.leftMargin: 8
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 6
+                        spacing: 8
+
+                        Text { 
+                            text: "Reboot?"
+                            color: Appearance.white
+                            anchors.verticalCenter: parent.verticalCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.bold: true
+                        }
+
+                        Rectangle {
+                            width: 40
+                            height: 28
+                            radius: 6
+                            color: rebootButton.color
+                            border.color: Appearance.color
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text { 
+                                anchors.centerIn: parent
+                                font.family: Appearance.materialSymbols
+                                text: "check"
+                                color: Appearance.white
+                                font.bold: true
+                            }
+
+                            MouseArea { 
+                                anchors.fill: parent
+                                onClicked: { 
+                                    rebootProc.command = ["sh", "-c", "systemctl reboot"]
+                                    rebootProc.running = true
+                                    confirmDialogReboot.visible = false
+                                }
+                                hoverEnabled: true
+                                onEntered: parent.opacity = 0.8
+                                onExited: parent.opacity = 1.0
+                                cursorShape: Qt.PointingHandCursor
+                            }
+                        }
+
+                        Rectangle {
+                            width: 40
+                            height: 28
+                            radius: 6
+                            color: rebootButton.color
+                            border.color: Appearance.color
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text { 
+                                anchors.centerIn: parent
+                                font.family: Appearance.materialSymbols
+                                text: "close"
+                                color: Appearance.white
+                                font.bold: true
+                            }
+
+                            MouseArea { 
+                                anchors.fill: parent
+                                onClicked: confirmDialogReboot.visible = false
+                                hoverEnabled: true
+                                onEntered: parent.opacity = 0.8
+                                onExited: parent.opacity = 1.0
+                                cursorShape: Qt.PointingHandCursor
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        Rectangle {
-            id: rebootButton
-            width: 32 * Appearance.scaleFactor
-            height: 32 * Appearance.scaleFactor
-            radius: 10
-            color: Appearance.color
-            scale: 1.0
-
-            Behavior on scale {
-                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
-            }
-
-            Process {
-                id: rebootProc
-                command: []
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                hoverEnabled: true
-
-                onClicked: {
-                    rebootProc.command = ["sh", "-c", "systemctl reboot"]
-                    rebootProc.running = true
-                }
-                onEntered: {
-                    rebootButton.scale = 1.2
-                }
-                onExited: {
-                    rebootButton.scale = 1.0
-                }
-            }
-
-            Text {
-                id: rebootIcon
-                anchors.centerIn: parent
-                text: "restart_alt"
-                color: Appearance.white
-                font.family: Appearance.materialSymbols
-                font.pixelSize: 20 * Appearance.scaleFactor
-            }
-        }
 
         Item { Layout.fillWidth: true }
         VolumeWidget {}
