@@ -4,15 +4,12 @@
 3. Change Wallpaper 
 4. Toggle Transparent responsive as Color (Done)
 5. Change name
-6. Change icon
-7. Change font
 
 # volume
 1. Add all source and sink (Done)
 
 # bar
 1. Change battery icon (Done)
-2. ~~~
 
 # dock
 1. Create dock app

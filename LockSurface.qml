@@ -403,13 +403,13 @@ Rectangle {
                     }
 
                     Item {
-                        width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor
+                        width: 18 *Appearance.scaleFactor; height:18*Appearance.scaleFactor
                         Text { anchors.centerIn: parent; text: mediaUtil.isPlaying ? "pause" : "resume"; font.family: Appearance.materialSymbols; font.pixelSize: 18*Appearance.scaleFactor; color: Appearance.white }
                         MouseArea { anchors.fill: parent; onClicked: mediaPlayPause(); cursorShape: Qt.PointingHandCursor }
                     }
 
                     Item {
-                        width: 18*Appearance.scaleFactor; height:18*Appearance.scaleFactor
+                        width: 18 *Appearance.scaleFactor; height:18*Appearance.scaleFactor
                         Text { anchors.centerIn: parent; text: "skip_next"; font.family: Appearance.materialSymbols; font.pixelSize: 18*Appearance.scaleFactor; color: Appearance.white }
                         MouseArea { 
                             anchors.fill: parent
@@ -462,7 +462,7 @@ Rectangle {
                         }
 
 
-                        Rectangle { anchors.fill: parent; color: "#000000"; opacity: 0.2 }
+                        Rectangle { anchors.fill: parent; color: "#000000"; opacity: 0.5 }
                     }
                 }
 

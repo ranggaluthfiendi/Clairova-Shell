@@ -275,7 +275,7 @@ Scope {
 
                     SysTrayWidget {}
 
-                    MediaWidget {}
+                    // MediaWidget {}
 
                     Item { Layout.fillWidth: true }
 
