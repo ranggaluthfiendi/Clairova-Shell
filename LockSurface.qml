@@ -160,10 +160,98 @@ Rectangle {
         property real initialY: y
         y: parent.height + height
 
+        Rectangle {
+            id: powerButton
+            width: 32 * Appearance.scaleFactor
+            height: 32 * Appearance.scaleFactor
+            radius: 10
+            color: Appearance.primary
+            scale: 1.0
+
+            Behavior on scale {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
+
+            Process {
+                id: powerProc
+                command: []
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+
+                onClicked: {
+                    powerProc.command = ["sh", "-c", "systemctl poweroff"]
+                    powerProc.running = true
+                }
+                onEntered: {
+                    powerButton.scale = 1.2
+                }
+                onExited: {
+                    powerButton.scale = 1.0
+                }
+            }
+
+            Text {
+                id: powerIcon
+                anchors.centerIn: parent
+                text: "power_settings_new"
+                color: Appearance.color
+                font.family: Appearance.materialSymbols
+                font.pixelSize: 20 * Appearance.scaleFactor
+            }
+        }
+
+        Rectangle {
+            id: rebootButton
+            width: 32 * Appearance.scaleFactor
+            height: 32 * Appearance.scaleFactor
+            radius: 10
+            color: Appearance.color
+            scale: 1.0
+
+            Behavior on scale {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
+
+            Process {
+                id: rebootProc
+                command: []
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+
+                onClicked: {
+                    rebootProc.command = ["sh", "-c", "systemctl reboot"]
+                    rebootProc.running = true
+                }
+                onEntered: {
+                    rebootButton.scale = 1.2
+                }
+                onExited: {
+                    rebootButton.scale = 1.0
+                }
+            }
+
+            Text {
+                id: rebootIcon
+                anchors.centerIn: parent
+                text: "restart_alt"
+                color: Appearance.white
+                font.family: Appearance.materialSymbols
+                font.pixelSize: 20 * Appearance.scaleFactor
+            }
+        }
+
+        Item { Layout.fillWidth: true }
         VolumeWidget {}
         BluetoothWidget {}
         WifiWidget {}
-        Item { Layout.fillWidth: true }
         BatteryWidget {}
 
         SequentialAnimation {

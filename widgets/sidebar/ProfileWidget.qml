@@ -209,7 +209,7 @@ Item {
 
                 Timer {
                     id: iconSwitcher
-                    interval: 1000  // ganti tiap 500ms
+                    interval: 1000
                     repeat: true
                     running: false
                     onTriggered: {
