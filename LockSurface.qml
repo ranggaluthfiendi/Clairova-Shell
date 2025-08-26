@@ -404,7 +404,7 @@ Rectangle {
 
                     Item {
                         width: 18 *Appearance.scaleFactor; height:18*Appearance.scaleFactor
-                        Text { anchors.centerIn: parent; text: mediaUtil.isPlaying ? "pause" : "resume"; font.family: Appearance.materialSymbols; font.pixelSize: 18*Appearance.scaleFactor; color: Appearance.white }
+                        Text { anchors.centerIn: parent; text: mediaUtil.isPlaying ? "pause" : "play_arrow"; font.family: Appearance.materialSymbols; font.pixelSize: 18*Appearance.scaleFactor; color: Appearance.white }
                         MouseArea { anchors.fill: parent; onClicked: mediaPlayPause(); cursorShape: Qt.PointingHandCursor }
                     }
 

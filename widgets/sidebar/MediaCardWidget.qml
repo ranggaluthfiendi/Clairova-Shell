@@ -363,7 +363,7 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: mediaUtil.isPlaying ? "pause" : "resume"
+                        text: mediaUtil.isPlaying ? "pause" : "play_arrow"
                         font.family: Appearance.materialSymbols
                         font.pixelSize: 18 * scaleFactor
                         color: Appearance.white

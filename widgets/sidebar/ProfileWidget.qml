@@ -170,27 +170,54 @@ Item {
             }
 
             Rectangle {
+                id: lockButton
                 width: 32 * Appearance.scaleFactor
                 height: 32 * Appearance.scaleFactor
-                radius: 6 * Appearance.scaleFactor
+                radius: width / 2
                 color: Appearance.primary
+                scale: 1.0
+
+                Behavior on scale {
+                    NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                }
 
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        requestLock()
+                    hoverEnabled: true
+
+                    onClicked: requestLock()
+                    onEntered: {
+                        lockButton.scale = 1.2
+                        iconSwitcher.start()
+                    }
+                    onExited: {
+                        lockButton.scale = 1.0
+                        iconSwitcher.stop()
+                        lockIcon.text = "lock"
                     }
                 }
 
                 Text {
+                    id: lockIcon
                     anchors.centerIn: parent
-                    text: "power_settings_new"
+                    text: "lock"
                     color: Appearance.color
                     font.family: Appearance.materialSymbols
                     font.pixelSize: 20 * Appearance.scaleFactor
                 }
+
+                Timer {
+                    id: iconSwitcher
+                    interval: 1000  // ganti tiap 500ms
+                    repeat: true
+                    running: false
+                    onTriggered: {
+                        lockIcon.text = (lockIcon.text === "lock") ? "lock_open" : "lock"
+                    }
+                }
             }
+
         }
     }
 }

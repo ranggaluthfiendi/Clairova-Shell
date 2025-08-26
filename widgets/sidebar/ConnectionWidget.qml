@@ -18,24 +18,46 @@ Item {
         anchors.margins: 10 * Appearance.scaleFactor
         spacing: 8 * Appearance.scaleFactor
 
+        // Bluetooth Tile
         Rectangle {
             id: bluetoothTile
             Layout.fillWidth: true
             Layout.preferredHeight: 60 * Appearance.scaleFactor
             radius: 30 * Appearance.scaleFactor
-
             property bool isActive: bluetoothUtils.enabled
+            scale: 1.0
             color: isActive ? Appearance.primary : Appearance.background
+
+            Behavior on scale {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: bluetoothUtils.toggleBluetooth()
+                hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
+                onClicked: bluetoothUtils.toggleBluetooth()
+                onEntered: scaleLoop.start()
+                onExited: {
+                    scaleLoop.stop()
+                    bluetoothTile.scale = 1.0
+                }
+            }
+
+            Timer {
+                id: scaleLoop
+                interval: 400
+                repeat: true
+                running: false
+                onTriggered: {
+                    bluetoothTile.scale = (bluetoothTile.scale > 1.0) ? 1.0 : 1.05
+                }
             }
 
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: 15 * Appearance.scaleFactor
+                spacing: 10 * Appearance.scaleFactor
 
                 Label {
                     text: bluetoothUtils.icon
@@ -73,24 +95,46 @@ Item {
             }
         }
 
+        // Wi-Fi Tile
         Rectangle {
             id: wifiTile
             Layout.fillWidth: true
             Layout.preferredHeight: 60 * Appearance.scaleFactor
             radius: 30 * Appearance.scaleFactor
-
             property bool isActive: wifiUtils.enabled
+            scale: 1.0
             color: isActive ? Appearance.primary : Appearance.background
+
+            Behavior on scale {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: wifiUtils.toggle()
+                hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
+                onClicked: wifiUtils.toggle()
+                onEntered: scaleLoopWifi.start()
+                onExited: {
+                    scaleLoopWifi.stop()
+                    wifiTile.scale = 1.0
+                }
+            }
+
+            Timer {
+                id: scaleLoopWifi
+                interval: 400
+                repeat: true
+                running: false
+                onTriggered: {
+                    wifiTile.scale = (wifiTile.scale > 1.0) ? 1.0 : 1.05
+                }
             }
 
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: 15 * Appearance.scaleFactor
+                spacing: 10 * Appearance.scaleFactor
 
                 Label {
                     text: {
