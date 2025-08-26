@@ -12,7 +12,7 @@ Item {
     property string title: "No Media Found"
     property string coverArtUrl: ""
     property string lastCoverUrl: ""
-    property string coverSource: "root:/assets/default-cover.png"
+    property string coverSource: imagePath
     property string status: "Stopped"
     property bool isPlaying: false
     property bool hasPlayer: false
@@ -77,7 +77,7 @@ Item {
                         lastCoverUrl = coverArtUrl
                         saveCoverArtFile(coverArtUrl, newTitle + newArtist)
                     } else if (changedTrack) {
-                        coverSource = "root:/assets/default-cover.png"
+                        coverSource = imagePath
                         mediaLoaded(title, artist, coverSource)
                     }
 
@@ -85,7 +85,7 @@ Item {
                     mediaUtil.hasPlayer = false
                     mediaUtil.title = "No Media Found"
                     mediaUtil.artist = "Open music player app to start"
-                    coverSource = "root:/assets/default-cover.png"
+                    coverSource = imagePath
                     mediaLoaded(title, artist, coverSource)
                 }
             }
@@ -178,7 +178,7 @@ Item {
     function saveCoverArtFile(url, trackId) {
         if (!url) return
         const folder = imagePath.replace(/\/[^\/]+$/,"")
-        coverSource = "root:/assets/default-cover.png"
+        coverSource = imagePath
         downloadProc.command = ["sh","-c",
             "mkdir -p '" + folder + "' && curl -s -L '" + url + "' -o '" + imagePath + "' && echo 'done'"
         ]
@@ -186,7 +186,7 @@ Item {
     }
 
     Component.onCompleted: {
-        coverSource = "root:/assets/default-cover.png"
+        coverSource = imagePath
         mediaLoaded(title, artist, coverSource)
     }
 }

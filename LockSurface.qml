@@ -149,7 +149,7 @@ Rectangle {
         Component.onCompleted: getUsernameProc.running = true
     }
 
-    RowLayout{
+    RowLayout {
         id: topBar
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -157,11 +157,82 @@ Rectangle {
         anchors.margins: 80
 
         opacity: 0
-        IndicatorWidget {}
-        Item { Layout.fillWidth: true }
-        SystemWidget {isInBar: false}
+        property real initialY: y
+        y: parent.height + height
 
-        SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 800; easing.type: Easing.OutCubic } }
+        VolumeWidget {}
+        BluetoothWidget {}
+        WifiWidget {}
+        Item { Layout.fillWidth: true }
+        BatteryWidget {}
+
+        SequentialAnimation {
+            running: true
+            NumberAnimation { 
+                target: topBar; property: "y"; from: topBar.y; to: topBar.initialY; duration: 800; easing.type: Easing.OutCubic 
+            }
+            NumberAnimation { 
+                target: topBar; property: "opacity"; from: 0; to: 1; duration: 800; easing.type: Easing.OutCubic 
+            }
+        }
+    }
+
+
+    ColumnLayout {
+        id: icon
+        anchors.top: parent.top
+        anchors.margins: 40 * Appearance.scaleFactor
+        spacing: 90
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            id: lockButton
+            width: 32 * Appearance.scaleFactor
+            height: 32 * Appearance.scaleFactor
+            radius: width / 2
+            color: Appearance.primary
+            scale: 1.0
+
+            Behavior on scale {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
+
+            Text {
+                id: lockIcon
+                anchors.centerIn: parent
+                text: "lock"
+                color: Appearance.color
+                font.family: Appearance.materialSymbols
+                font.pixelSize: 20 * Appearance.scaleFactor
+            }
+
+            Timer {
+                id: scaleLoop
+                interval: 400
+                repeat: true
+                running: true
+                property bool enlarged: false
+
+                onTriggered: {
+                    lockButton.scale = enlarged ? 1.0 : 1.05
+                    enlarged = !enlarged
+                }
+            }
+
+            Timer {
+                id: iconLoop
+                interval: 1000
+                repeat: true
+                running: true
+
+                onTriggered: {
+                    lockIcon.text = (lockIcon.text === "lock") ? "lock_open" : "lock"
+                }
+            }
+        }
+
+        IndicatorWidget {}
     }
 
     ColumnLayout {
