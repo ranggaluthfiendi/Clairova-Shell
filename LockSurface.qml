@@ -24,6 +24,7 @@ Rectangle {
     required property LockContext context 
     readonly property string wallpaperPath: StandardPaths.writableLocation(StandardPaths.HomeLocation) + "/Pictures/Wallpapers/Wallpaper.jpg" 
     y: -200 
+    
     SequentialAnimation on y { NumberAnimation { to: 0; duration: 800; easing.type: Easing.OutCubic } } 
     
     property PwNode node: Pipewire.defaultAudioSink; 
@@ -33,6 +34,16 @@ Rectangle {
     BrightnessUtil { id: brightnessUtil } 
     
     Component.onCompleted: { passwordBox.focus = false } 
+
+    MediaUtil { id: mediaUtil }
+
+    Process { id: playPauseProc; command: ["playerctl", "-p", "plasma-browser-integration", "play-pause"] } 
+    Process { id: nextProc; command: ["playerctl", "-p", "plasma-browser-integration", "next"] } 
+    Process { id: prevProc; command: ["playerctl", "-p", "plasma-browser-integration", "previous"] } 
+
+    function mediaPlayPause() { playPauseProc.running = true } 
+    function mediaNext() { nextProc.running = true } 
+    function mediaPrev() { prevProc.running = true } 
 
     Keys.onPressed: (event) => { if ((event.key === Qt.Key_Space || event.key === Qt.Key_Tab) && !passwordBox.focus) { passwordBox.forceActiveFocus() } } 
     
@@ -124,16 +135,6 @@ Rectangle {
             opacity: 0.7 
         } 
     } 
-    
-    MediaUtil { id: mediaUtil }
-
-    Process { id: playPauseProc; command: ["playerctl", "-p", "plasma-browser-integration", "play-pause"] } 
-    Process { id: nextProc; command: ["playerctl", "-p", "plasma-browser-integration", "next"] } 
-    Process { id: prevProc; command: ["playerctl", "-p", "plasma-browser-integration", "previous"] } 
-
-    function mediaPlayPause() { playPauseProc.running = true } 
-    function mediaNext() { nextProc.running = true } 
-    function mediaPrev() { prevProc.running = true } 
     
     Item { 
         id: profileUtil 
@@ -411,7 +412,9 @@ Rectangle {
                 } 
             } 
         } 
+
         Item { Layout.fillWidth: true } 
+
         VolumeWidget {} 
         BluetoothWidget {} 
         WifiWidget {} 
@@ -614,313 +617,316 @@ Rectangle {
                 SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 1000; easing.type: Easing.OutQuad } } 
                 Keys.onEscapePressed: passwordBox.focus = false 
 
-                function triggerError() { 
-                    passwordBox.isError = true 
-                    if (shakeAnim.running) shakeAnim.stop() 
-                    if (errorHoldTimer.running) errorHoldTimer.stop() 
-                    shakeAnim.start() 
+                function triggerError() {
+                    passwordBox.isError = true
+                    if (shakeAnim.running) shakeAnim.stop()
+                    if (errorHoldTimer.running) errorHoldTimer.stop()
+                    shakeAnim.start()
 
-                    errorLabel.visible = true 
+                    passwordBox.text = ""
 
+                    errorLabel.visible = true
+                    errorLabel.opacity = 1
                     hideErrorTimer.restart()
+                }
 
-                    } SequentialAnimation { 
-                        id: shakeAnim 
-                        running: false 
-                        PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: -10; duration: 50 } 
-                        PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: 10; duration: 50 } 
-                        PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: -6; duration: 40 } 
-                        PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: 6; duration: 40 } 
-                        PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: 0; duration: 30 } 
-                        
-                        onStopped: errorHoldTimer.start() 
-                    } 
-                    
-                    Timer { 
-                        id: errorHoldTimer 
-                        interval: 150 
-                        repeat: false 
-                        onTriggered: passwordBox.isError = false 
-                    } 
-                    
-                    Timer { 
-                        id: unlockResultTimer 
-                        interval: 100 
-                        repeat: true 
-                        property int attempts: 0 
-                        onTriggered: { 
-                            attempts += 1 
-                            if (root.context.showFailure) { 
-                                errorLabel.text = "Incorrect password" 
-                                errorLabel.visible = true 
-                                passwordBox.triggerError() 
-                                stop() 
-                            } 
-                            if (attempts > 30) stop() 
-                        } 
-                    } 
-                } 
-            } 
-            Label { 
-                anchors.topMargin: 30 
-                anchors.top: passwordContainer.bottom 
-                id: errorLabel 
-                color: Appearance.primary 
-                visible: false 
-                font.family: Appearance.bitcountFont 
-                text: "" 
-                horizontalAlignment: Text.AlignHCenter 
-                anchors.horizontalCenter: parent.horizontalCenter 
-                font.pointSize: 16 * Appearance.scaleFactor 
-                opacity: 0 
-                
-                SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 500; easing.type: Easing.OutQuad } } 
-                
-                Timer { 
-                    id: hideErrorTimer 
-                    interval: 
-                    2000 
-                    repeat: false 
-                    onTriggered: { 
-                        errorLabel.visible = false 
-                        errorLabel.opacity = 0 
-                    } 
-                } 
-            } 
-            
-            ColumnLayout { 
-                anchors.top: errorLabel.bottom 
-                id: bottomColumn 
-                spacing: 6 
-                opacity: 0 
-                
-                SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 1000; easing.type: Easing.OutCubic } } 
-                
-                RowLayout { 
-                    anchors.horizontalCenter: parent.horizontalCenter 
-                    spacing: 50 
-                    ColumnLayout { 
-                        x : -200 
-                        SequentialAnimation on x { NumberAnimation { to: 0; duration: 800; easing.type: Easing.OutCubic } } 
-                        
-                        Label {
-                            id: clock
-                            property var date: new Date()
-                            font.pointSize: 16
-                            color: Appearance.white
-                            font.family: Appearance.bitcountFont
-
-                            Timer { running: true; repeat: true; interval: 1000; onTriggered: clock.date = new Date() }
-
-                            text: {
-                                const h = clock.date.getHours().toString().padStart(2, "0")
-                                const m = clock.date.getMinutes().toString().padStart(2, "0")
-                                return h + ":" + m
-                            }
-                        }
-
-                        Label { 
-                            id: dateLabel 
-                            property var date: new Date() 
-                            font.pointSize: 12 
-                            color: Appearance.white 
-                            horizontalAlignment: Text.AlignHCenter 
-                            anchors.horizontalCenter: parent.horizontalCenter 
-                            font.family: Appearance.bitcountFont 
-                            Timer { running: true; repeat: true; interval: 60000; onTriggered: dateLabel.date = new Date() } 
-                            
-                            text: Qt.formatDate(date, "ddd dd • MMMM • yyyy") 
-                        } 
-                    } 
-                    
-                    Item { Layout.fillWidth: true } 
-                    
-                    MediaWidget { iconSize: 28 } 
-                    
-                    Column { 
-                        spacing: 8 
-                        opacity: 0 
-                        SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 500; easing.type: Easing.OutQuad } } 
-                        Item { 
-                            width: 200 * Appearance.scaleFactor 
-                            height: 16 * Appearance.scaleFactor 
-                            clip: true 
-                            TextMetrics { id: titleMetrics; text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true } 
-                            Text { 
-                                visible: titleMetrics.width <= parent.width 
-                                anchors.verticalCenter: parent.verticalCenter 
-                                text: mediaUtil.title || "No Media Found" 
-                                font.pixelSize: 14 * Appearance.scaleFactor 
-                                font.bold: true 
-                                color: Appearance.white 
-                                elide: Text.ElideRight 
-                            } 
-                            
-                            Item { 
-                                visible: titleMetrics.width > parent.width 
-                                anchors.fill: parent 
-                                clip: true 
-                                property real offset: 0 
-                                Row { 
-                                    id: titleScroll 
-                                    spacing: 40 
-                                    anchors.verticalCenter: parent.verticalCenter 
-                                    x: parent.offset 
-                                    Text { text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
-                                    Text { text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
-                                } 
-                                NumberAnimation on offset { from: 0; to: -(titleMetrics.width + 40); duration: (titleMetrics.width + 40) * 40; loops: Animation.Infinite; running: true } 
-                            } 
-                        } 
-                        
-                        Item { 
-                            width: 330 * Appearance.scaleFactor 
-                            height: 14 * Appearance.scaleFactor 
-                            clip: true 
-                            TextMetrics { id: artistMetrics; text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor } 
-                            Text { 
-                                visible: artistMetrics.width <= parent.width 
-                                anchors.verticalCenter: parent.verticalCenter 
-                                text: mediaUtil.artist || "Open music player app to start" 
-                                font.pixelSize: 12 * Appearance.scaleFactor 
-                                color: Appearance.white 
-                                elide: Text.ElideRight 
-                            } 
-                            Item { 
-                                visible: artistMetrics.width > parent.width 
-                                anchors.fill: parent 
-                                clip: true 
-                                property real offset: 0
-                                Row { 
-                                    id: artistScroll 
-                                    spacing: 40 
-                                    anchors.verticalCenter: parent.verticalCenter 
-                                    x: parent.offset 
-                                    Text { text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
-                                    Text { text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
-                                } 
-                                NumberAnimation on offset { from: 0; to: -(artistMetrics.width + 40); duration: (artistMetrics.width + 40) * 40; loops: Animation.Infinite; running: true } 
-                            } 
-                        } 
-                    } 
-                    Row { 
-                        x: 900 
-                        spacing: 25 * Appearance.scaleFactor 
-                        SequentialAnimation on x { 
-                            NumberAnimation { to: 700; duration: 800; easing.type: Easing.OutCubic } 
-                        } 
-                        
-                        Item { 
-                            width: 18*Appearance.scaleFactor; 
-                            height:18*Appearance.scaleFactor 
-                            Text { 
-                                anchors.centerIn: parent; 
-                                text: "skip_previous"; 
-                                font.family: Appearance.materialSymbols; 
-                                font.pixelSize: 18*Appearance.scaleFactor; 
-                                color: Appearance.white 
-                            } 
-                            MouseArea { 
-                                anchors.fill: parent
-                                onClicked: { 
-                                    mediaPrev() 
-                                    mediaColumn.opacity = 0 
-                                    fadeAnim.start() 
-                                    mediaColumn.y = 200 
-                                    yAnim.start() 
-                                } 
-                                cursorShape: Qt.PointingHandCursor 
-                            } 
-                        } 
-                        
-                        Item {
-                             width: 18 *Appearance.scaleFactor; 
-                             height:18*Appearance.scaleFactor 
-                             Text { 
-                                anchors.centerIn: parent; 
-                                text: mediaUtil.isPlaying ? "pause" : "play_arrow"; 
-                                font.family: Appearance.materialSymbols; 
-                                font.pixelSize: 18*Appearance.scaleFactor; 
-                                color: Appearance.white 
-                            } 
-                            MouseArea { 
-                                anchors.fill: parent; 
-                                onClicked: mediaPlayPause(); 
-                                cursorShape: Qt.PointingHandCursor 
-                            } 
-                        } 
-                        Item { 
-                            width: 18 *Appearance.scaleFactor; 
-                            height:18*Appearance.scaleFactor 
-                            Text { 
-                                anchors.centerIn: parent; 
-                                text: "skip_next"; 
-                                font.family: Appearance.materialSymbols; 
-                                font.pixelSize: 18*Appearance.scaleFactor; 
-                                color: Appearance.white 
-                            } 
-                            
-                            MouseArea { 
-                                anchors.fill: parent 
-                                onClicked: { 
-                                    mediaNext() 
-                                    mediaColumn.opacity = 0 
-                                    fadeAnim.start() 
-                                    mediaColumn.y = 200 
-                                    yAnim.start()
-                                } 
-                                cursorShape: Qt.PointingHandCursor 
-                            } 
-                        } 
-                    } 
-                } 
-            ColumnLayout { 
-                id: mediaColumn 
-                anchors.horizontalCenter: parent.horizontalCenter 
-                y: 200 
-                opacity: 1 
-                Layout.topMargin: 50 * Appearance.scaleFactor 
                 SequentialAnimation { 
-                    id: yAnim 
-                    running: true 
-                    NumberAnimation { target: mediaColumn; property: "y"; from: 200; to: 100; duration: 800; easing.type: Easing.OutCubic } } 
-                    ClippingWrapperRectangle { 
-                        width: 300 * Appearance.scaleFactor 
-                        height: 180 * Appearance.scaleFactor 
-                        radius: 12 * Appearance.scaleFactor 
-                        opacity: mediaUtil.title && mediaUtil.title !== "No Media Found" ? 1 : 0 
-                        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } } 
-
-                        Item { 
-                            id: container 
-                            anchors.fill: parent 
-                            Rectangle { 
-                                anchors.fill: parent; 
-                                color: Appearance.primary 
-                            } 
-                            
-                            Image { 
-                                anchors.fill: parent 
-                                fillMode: Image.PreserveAspectCrop 
-                                cache: false 
-                                asynchronous: true 
-                                source: mediaUtil.coverSource 
-                            } 
-
-                            Rectangle { anchors.fill: parent; color: "#000000"; opacity: 0.5 } 
+                    id: shakeAnim 
+                    running: false 
+                    PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: -10; duration: 50 } 
+                    PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: 10; duration: 50 } 
+                    PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: -6; duration: 40 } 
+                    PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: 6; duration: 40 } 
+                    PropertyAnimation { target: passwordBox.anchors; property: "horizontalCenterOffset"; to: 0; duration: 30 } 
+                    
+                    onStopped: errorHoldTimer.start() 
+                } 
+                    
+                Timer { 
+                    id: errorHoldTimer 
+                    interval: 150 
+                    repeat: false 
+                    onTriggered: passwordBox.isError = false 
+                } 
+                    
+                Timer { 
+                    id: unlockResultTimer 
+                    interval: 100 
+                    repeat: true 
+                    property int attempts: 0 
+                    onTriggered: { 
+                        attempts += 1 
+                        if (root.context.showFailure) { 
+                            errorLabel.text = "Incorrect password" 
+                            errorLabel.visible = true 
+                            passwordBox.triggerError() 
+                            stop() 
                         } 
-                    } 
-                    NumberAnimation { 
-                        id: fadeAnim 
-                        target: mediaColumn 
-                        property: "opacity" 
-                        from: 0 
-                        to: 1 
-                        duration: 600
-                        easing.type: Easing.OutCubic 
-                        running: false 
+                        if (attempts > 30) stop() 
                     } 
                 } 
             } 
         } 
-    }
+        Label { 
+            anchors.topMargin: 30 
+            anchors.top: passwordContainer.bottom 
+            id: errorLabel 
+            color: Appearance.primary 
+            visible: false 
+            font.family: Appearance.bitcountFont 
+            text: "" 
+            horizontalAlignment: Text.AlignHCenter 
+            anchors.horizontalCenter: parent.horizontalCenter 
+            font.pointSize: 16 * Appearance.scaleFactor 
+            opacity: 0 
+            
+            SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 500; easing.type: Easing.OutQuad } } 
+            
+            Timer { 
+                id: hideErrorTimer 
+                interval: 
+                2000 
+                repeat: false 
+                onTriggered: { 
+                    errorLabel.visible = false 
+                    errorLabel.opacity = 0 
+                } 
+            } 
+        } 
+        
+        ColumnLayout { 
+            anchors.top: errorLabel.bottom 
+            id: bottomColumn 
+            spacing: 6 
+            opacity: 0 
+            
+            SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 1000; easing.type: Easing.OutCubic } } 
+            
+            RowLayout { 
+                anchors.horizontalCenter: parent.horizontalCenter 
+                spacing: 50 
+                ColumnLayout { 
+                    x : -200 
+                    SequentialAnimation on x { NumberAnimation { to: 0; duration: 800; easing.type: Easing.OutCubic } } 
+                    
+                    Label {
+                        id: clock
+                        property var date: new Date()
+                        font.pointSize: 16
+                        color: Appearance.white
+                        font.family: Appearance.bitcountFont
+
+                        Timer { running: true; repeat: true; interval: 1000; onTriggered: clock.date = new Date() }
+
+                        text: {
+                            const h = clock.date.getHours().toString().padStart(2, "0")
+                            const m = clock.date.getMinutes().toString().padStart(2, "0")
+                            return h + ":" + m
+                        }
+                    }
+
+                    Label { 
+                        id: dateLabel 
+                        property var date: new Date() 
+                        font.pointSize: 12 
+                        color: Appearance.white 
+                        horizontalAlignment: Text.AlignHCenter 
+                        anchors.horizontalCenter: parent.horizontalCenter 
+                        font.family: Appearance.bitcountFont 
+                        Timer { running: true; repeat: true; interval: 60000; onTriggered: dateLabel.date = new Date() } 
+                        
+                        text: Qt.formatDate(date, "ddd dd • MMMM • yyyy") 
+                    } 
+                } 
+                
+                Item { Layout.fillWidth: true } 
+                
+                MediaWidget { iconSize: 28 } 
+                
+                Column { 
+                    spacing: 8 
+                    opacity: 0 
+                    SequentialAnimation on opacity { NumberAnimation { to: 1; duration: 500; easing.type: Easing.OutQuad } } 
+                    Item { 
+                        width: 200 * Appearance.scaleFactor 
+                        height: 16 * Appearance.scaleFactor 
+                        clip: true 
+                        TextMetrics { id: titleMetrics; text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true } 
+                        Text { 
+                            visible: titleMetrics.width <= parent.width 
+                            anchors.verticalCenter: parent.verticalCenter 
+                            text: mediaUtil.title || "No Media Found" 
+                            font.pixelSize: 14 * Appearance.scaleFactor 
+                            font.bold: true 
+                            color: Appearance.white 
+                            elide: Text.ElideRight 
+                        } 
+                        
+                        Item { 
+                            visible: titleMetrics.width > parent.width 
+                            anchors.fill: parent 
+                            clip: true 
+                            property real offset: 0 
+                            Row { 
+                                id: titleScroll 
+                                spacing: 40 
+                                anchors.verticalCenter: parent.verticalCenter 
+                                x: parent.offset 
+                                Text { text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
+                                Text { text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
+                            } 
+                            NumberAnimation on offset { from: 0; to: -(titleMetrics.width + 40); duration: (titleMetrics.width + 40) * 40; loops: Animation.Infinite; running: true } 
+                        } 
+                    } 
+                    
+                    Item { 
+                        width: 330 * Appearance.scaleFactor 
+                        height: 14 * Appearance.scaleFactor 
+                        clip: true 
+                        TextMetrics { id: artistMetrics; text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor } 
+                        Text { 
+                            visible: artistMetrics.width <= parent.width 
+                            anchors.verticalCenter: parent.verticalCenter 
+                            text: mediaUtil.artist || "Open music player app to start" 
+                            font.pixelSize: 12 * Appearance.scaleFactor 
+                            color: Appearance.white 
+                            elide: Text.ElideRight 
+                        } 
+                        Item { 
+                            visible: artistMetrics.width > parent.width 
+                            anchors.fill: parent 
+                            clip: true 
+                            property real offset: 0
+                            Row { 
+                                id: artistScroll 
+                                spacing: 40 
+                                anchors.verticalCenter: parent.verticalCenter 
+                                x: parent.offset 
+                                Text { text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
+                                Text { text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
+                            } 
+                            NumberAnimation on offset { from: 0; to: -(artistMetrics.width + 40); duration: (artistMetrics.width + 40) * 40; loops: Animation.Infinite; running: true } 
+                        } 
+                    } 
+                } 
+                Row { 
+                    x: 900 
+                    spacing: 25 * Appearance.scaleFactor 
+                    SequentialAnimation on x { 
+                        NumberAnimation { to: 700; duration: 800; easing.type: Easing.OutCubic } 
+                    } 
+                    
+                    Item { 
+                        width: 18*Appearance.scaleFactor; 
+                        height:18*Appearance.scaleFactor 
+                        Text { 
+                            anchors.centerIn: parent; 
+                            text: "skip_previous"; 
+                            font.family: Appearance.materialSymbols; 
+                            font.pixelSize: 18*Appearance.scaleFactor; 
+                            color: Appearance.white 
+                        } 
+                        MouseArea { 
+                            anchors.fill: parent
+                            onClicked: { 
+                                mediaPrev() 
+                                mediaColumn.opacity = 0 
+                                fadeAnim.start() 
+                                mediaColumn.y = 200 
+                                yAnim.start() 
+                            } 
+                            cursorShape: Qt.PointingHandCursor 
+                        } 
+                    } 
+                    
+                    Item {
+                            width: 18 *Appearance.scaleFactor; 
+                            height:18*Appearance.scaleFactor 
+                            Text { 
+                            anchors.centerIn: parent; 
+                            text: mediaUtil.isPlaying ? "pause" : "play_arrow"; 
+                            font.family: Appearance.materialSymbols; 
+                            font.pixelSize: 18*Appearance.scaleFactor; 
+                            color: Appearance.white 
+                        } 
+                        MouseArea { 
+                            anchors.fill: parent; 
+                            onClicked: mediaPlayPause(); 
+                            cursorShape: Qt.PointingHandCursor 
+                        } 
+                    } 
+                    Item { 
+                        width: 18 *Appearance.scaleFactor; 
+                        height:18*Appearance.scaleFactor 
+                        Text { 
+                            anchors.centerIn: parent; 
+                            text: "skip_next"; 
+                            font.family: Appearance.materialSymbols; 
+                            font.pixelSize: 18*Appearance.scaleFactor; 
+                            color: Appearance.white 
+                        } 
+                        
+                        MouseArea { 
+                            anchors.fill: parent 
+                            onClicked: { 
+                                mediaNext() 
+                                mediaColumn.opacity = 0 
+                                fadeAnim.start() 
+                                mediaColumn.y = 200 
+                                yAnim.start()
+                            } 
+                            cursorShape: Qt.PointingHandCursor 
+                        } 
+                    } 
+                } 
+            } 
+        ColumnLayout { 
+            id: mediaColumn 
+            anchors.horizontalCenter: parent.horizontalCenter 
+            y: 200 
+            opacity: 1 
+            Layout.topMargin: 50 * Appearance.scaleFactor 
+            SequentialAnimation { 
+                id: yAnim 
+                running: true 
+                NumberAnimation { target: mediaColumn; property: "y"; from: 200; to: 100; duration: 800; easing.type: Easing.OutCubic } } 
+                ClippingWrapperRectangle { 
+                    width: 300 * Appearance.scaleFactor 
+                    height: 180 * Appearance.scaleFactor 
+                    radius: 12 * Appearance.scaleFactor 
+                    opacity: mediaUtil.title && mediaUtil.title !== "No Media Found" ? 1 : 0 
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } } 
+
+                    Item { 
+                        id: container 
+                        anchors.fill: parent 
+                        Rectangle { 
+                            anchors.fill: parent; 
+                            color: Appearance.primary 
+                        } 
+                        
+                        Image { 
+                            anchors.fill: parent 
+                            fillMode: Image.PreserveAspectCrop 
+                            cache: false 
+                            asynchronous: true 
+                            source: mediaUtil.coverSource 
+                        } 
+
+                        Rectangle { anchors.fill: parent; color: "#000000"; opacity: 0.5 } 
+                    } 
+                } 
+                NumberAnimation { 
+                    id: fadeAnim 
+                    target: mediaColumn 
+                    property: "opacity" 
+                    from: 0 
+                    to: 1 
+                    duration: 600
+                    easing.type: Easing.OutCubic 
+                    running: false 
+                } 
+            } 
+        } 
+    } 
+}
