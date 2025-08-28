@@ -296,16 +296,17 @@ Scope {
         description: "Toggle bar layer between Top and Overlay"
 
         onPressed: {
-            if (bar.barWindowRef) {
-                if (bar.barWindowRef.currentLayer === WlrLayer.Top)
-                    bar.barWindowRef.currentLayer = WlrLayer.Overlay
-                else
-                    bar.barWindowRef.currentLayer = WlrLayer.Top
-                Qt.callLater(() => {
-                    bar.barWindowRef.visible = false
-                    Qt.callLater(() => bar.barWindowRef.visible = true)
-                })
-            }
+            if (!bar.barWindowRef) return;
+
+            var newLayer = (bar.barWindowRef.WlrLayershell.layer === WlrLayer.Bottom)
+                        ? WlrLayer.Overlay
+                        : WlrLayer.Bottom;
+
+            bar.barWindowRef.WlrLayershell.layer = newLayer
+            bar.barWindowRef.currentLayer = newLayer
+
+            bar.barWindowRef.visible = false
+            Qt.callLater(() => bar.barWindowRef.visible = true)
         }
     }
 }
