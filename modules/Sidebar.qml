@@ -98,7 +98,7 @@ PopupWindow {
                         Layout.topMargin: 90 * Appearance.scaleFactor
                         Layout.leftMargin: 14  * Appearance.scaleFactor
 
-                        MediaCardWidget {
+                        MediaCardWidget2 {
                             Layout.preferredWidth: parent.width - (10 * Appearance.scaleFactor)
                         }
                     }
