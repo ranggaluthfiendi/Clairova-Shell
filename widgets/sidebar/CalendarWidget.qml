@@ -36,18 +36,28 @@ Item {
                 implicitWidth: titleRow.implicitWidth + 24 * Appearance.scaleFactor
                 implicitHeight: titleRow.implicitHeight + 12 * Appearance.scaleFactor
 
-                Row {
+                RowLayout {
                     id: titleRow
                     anchors.left: parent.left
                     anchors.leftMargin: 15 * Appearance.scaleFactor
                     anchors.verticalCenter: parent.verticalCenter
 
                     Text {
-                        text: calendarWidget.currentMonth + "・"
+                        text: calendarWidget.currentMonth
                         font.pixelSize: 16 * Appearance.scaleFactor
                         font.family: Appearance.defaultFont
                         font.bold: true
                         color: Appearance.white
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    Text {
+                        text: "・"
+                        font.pixelSize: 16 * Appearance.scaleFactor
+                        font.family: Appearance.defaultFont
+                        font.bold: true
+                        color: Appearance.white
+                        Layout.alignment: Qt.AlignVCenter
                     }
 
                     Text {
@@ -55,6 +65,7 @@ Item {
                         font.family: Appearance.defaultFont
                         font.pixelSize: 16 * Appearance.scaleFactor
                         color: Qt.rgba(Appearance.white.r, Appearance.white.g, Appearance.white.b, 0.5)
+                        Layout.alignment: Qt.AlignVCenter
                     }
                 }
             }

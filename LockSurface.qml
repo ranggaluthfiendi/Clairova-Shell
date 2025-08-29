@@ -15,6 +15,7 @@ import qs.widgets.bar.right
 import QtCore 
 import qs.widgets.sidebar 
 import Quickshell.Services.Pipewire 
+import Quickshell.Services.Mpris
 
 Rectangle { 
     id: root 
@@ -34,16 +35,43 @@ Rectangle {
     BrightnessUtil { id: brightnessUtil } 
     
     Component.onCompleted: { passwordBox.focus = false } 
+    
+    MediaCoverUtil {
+        id: coverUtil
+        trackArtUrl: currentPlayer.trackArtUrl
+    }
+
+    property MprisPlayer currentPlayer: Mpris.players.values.length > 0 ? Mpris.players.values[0] : null
 
     MediaUtil { id: mediaUtil }
 
-    Process { id: playPauseProc; command: ["playerctl", "-p", "plasma-browser-integration", "play-pause"] } 
-    Process { id: nextProc; command: ["playerctl", "-p", "plasma-browser-integration", "next"] } 
-    Process { id: prevProc; command: ["playerctl", "-p", "plasma-browser-integration", "previous"] } 
+    
 
-    function mediaPlayPause() { playPauseProc.running = true } 
-    function mediaNext() { nextProc.running = true } 
-    function mediaPrev() { prevProc.running = true } 
+    function mediaPlayPause() {
+        if (currentPlayer && currentPlayer.canTogglePlaying) {
+            currentPlayer.togglePlaying()
+        }
+    }
+
+    function mediaNext() {
+        if (currentPlayer && currentPlayer.canGoNext) {
+            currentPlayer.next()
+        }
+    }
+
+    function mediaPrev() {
+        if (currentPlayer && currentPlayer.canGoPrevious) {
+            currentPlayer.previous()
+        }
+    }
+
+    function mediaTitle() {
+        return currentPlayer ? (currentPlayer.trackTitle || "No Media Found") : "No Media Found"
+    }
+
+    function mediaArtist() {
+        return currentPlayer ? (currentPlayer.trackArtist || "Open music player app to start") : "Open music player app to start"
+    }
 
     Keys.onPressed: (event) => { if ((event.key === Qt.Key_Space || event.key === Qt.Key_Tab) && !passwordBox.focus) { passwordBox.forceActiveFocus() } } 
     
@@ -751,11 +779,11 @@ Rectangle {
                         width: 200 * Appearance.scaleFactor 
                         height: 16 * Appearance.scaleFactor 
                         clip: true 
-                        TextMetrics { id: titleMetrics; text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true } 
+                        TextMetrics { id: titleMetrics; text: mediaTitle(); font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true } 
                         Text { 
                             visible: titleMetrics.width <= parent.width 
                             anchors.verticalCenter: parent.verticalCenter 
-                            text: mediaUtil.title || "No Media Found" 
+                            text: mediaTitle()
                             font.pixelSize: 14 * Appearance.scaleFactor 
                             font.bold: true 
                             color: Appearance.white 
@@ -772,8 +800,8 @@ Rectangle {
                                 spacing: 40 
                                 anchors.verticalCenter: parent.verticalCenter 
                                 x: parent.offset 
-                                Text { text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
-                                Text { text: mediaUtil.title || "No Media Found"; font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
+                                Text { text: mediaTitle(); font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
+                                Text { text: mediaTitle(); font.pixelSize: 14 * Appearance.scaleFactor; font.bold: true; color: Appearance.white } 
                             } 
                             NumberAnimation on offset { from: 0; to: -(titleMetrics.width + 40); duration: (titleMetrics.width + 40) * 40; loops: Animation.Infinite; running: true } 
                         } 
@@ -783,11 +811,11 @@ Rectangle {
                         width: 330 * Appearance.scaleFactor 
                         height: 14 * Appearance.scaleFactor 
                         clip: true 
-                        TextMetrics { id: artistMetrics; text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor } 
+                        TextMetrics { id: artistMetrics; text: mediaArtist(); font.pixelSize: 12 * Appearance.scaleFactor } 
                         Text { 
                             visible: artistMetrics.width <= parent.width 
                             anchors.verticalCenter: parent.verticalCenter 
-                            text: mediaUtil.artist || "Open music player app to start" 
+                            text: mediaArtist()
                             font.pixelSize: 12 * Appearance.scaleFactor 
                             color: Appearance.white 
                             elide: Text.ElideRight 
@@ -802,8 +830,8 @@ Rectangle {
                                 spacing: 40 
                                 anchors.verticalCenter: parent.verticalCenter 
                                 x: parent.offset 
-                                Text { text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
-                                Text { text: mediaUtil.artist || "Open music player app to start"; font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
+                                Text { text: mediaArtist(); font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
+                                Text { text: mediaArtist(); font.pixelSize: 12 * Appearance.scaleFactor; color: Appearance.white } 
                             } 
                             NumberAnimation on offset { from: 0; to: -(artistMetrics.width + 40); duration: (artistMetrics.width + 40) * 40; loops: Animation.Infinite; running: true } 
                         } 
@@ -844,7 +872,7 @@ Rectangle {
                             height:18*Appearance.scaleFactor 
                             Text { 
                             anchors.centerIn: parent; 
-                            text: mediaUtil.isPlaying ? "pause" : "play_arrow"; 
+                            text: currentPlayer && currentPlayer.isPlaying ? "pause" : "play_arrow"
                             font.family: Appearance.materialSymbols; 
                             font.pixelSize: 18*Appearance.scaleFactor; 
                             color: Appearance.white 
@@ -894,7 +922,7 @@ Rectangle {
                     width: 300 * Appearance.scaleFactor 
                     height: 180 * Appearance.scaleFactor 
                     radius: 12 * Appearance.scaleFactor 
-                    opacity: mediaUtil.title && mediaUtil.title !== "No Media Found" ? 1 : 0 
+                    opacity: mediaTitle() && mediaTitle() !== "No Media Found" ? 1 : 0 
                     Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } } 
 
                     Item { 
@@ -905,13 +933,13 @@ Rectangle {
                             color: Appearance.primary 
                         } 
                         
-                        Image { 
-                            anchors.fill: parent 
-                            fillMode: Image.PreserveAspectCrop 
-                            cache: false 
-                            asynchronous: true 
-                            source: mediaUtil.coverSource 
-                        } 
+                        Image {
+                            anchors.fill: parent
+                            fillMode: Image.PreserveAspectCrop
+                            cache: false
+                            asynchronous: true
+                            source: coverUtil.coverSource
+                        }
 
                         Rectangle { anchors.fill: parent; color: "#000000"; opacity: 0.5 } 
                     } 

@@ -371,7 +371,7 @@ Item {
                 width: 330 * Appearance.scaleFactor
                 height: 6 * scaleFactor
                 backgroundColor: Appearance.background
-                progress: currentPlayer.playbackState
+                // progress: MprisPlaybackState.Playing
             }
         }
 

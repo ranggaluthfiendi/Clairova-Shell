@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
 import qs.utils
 import qs.config
+import Quickshell.Services.Mpris
 
 Item {
     id: root
@@ -14,9 +15,13 @@ Item {
     implicitWidth: 150 * scaleFactor
     implicitHeight: 6 * scaleFactor
 
+    property MprisPlayer currentPlayer: Mpris.players.values.length > 0 ? Mpris.players.values[0] : null
+
+    property string playbackState: currentPlayer ? currentPlayer.playbackState : ""
+    property bool isPlaying: currentPlayer ? currentPlayer.playbackState === MprisPlaybackState.Playing : false
+
+
     property real scaleFactor: Appearance.scaleFactor
-    property alias progress: mediaUtil.progress
-    property alias isPlaying: mediaUtil.isPlaying
     property color backgroundColor: Appearance.background
 
     signal onSeek(real value)
@@ -33,7 +38,8 @@ Item {
 
         Rectangle {
             id: fillWrapper
-            width: progress * track.width
+            width: currentPlayer && currentPlayer.length > 0 ? (currentPlayer.position / currentPlayer.length) * track.width : 0
+
             height: track.height
             color: "transparent"
             layer.enabled: true
