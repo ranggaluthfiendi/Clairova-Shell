@@ -1058,7 +1058,7 @@ Rectangle {
                     width: 300 * Appearance.scaleFactor 
                     height: 180 * Appearance.scaleFactor 
                     radius: 12 * Appearance.scaleFactor 
-                    opacity: mediaTitle() && mediaTitle() !== "No Media Found" ? 1 : 0 
+                    opacity: currentPlayer && currentPlayer.isPlaying ? 1 : 0 
                     Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } } 
 
                     Item { 
