@@ -85,11 +85,12 @@ Rectangle {
     
     Item { 
         id: volumeHotCorner 
-        width: 60; 
-        height: 60 
+        width: 60
+        height: 60
         anchors.top: parent.top 
         anchors.left: parent.left 
         z: 2 
+
         Text { 
             id: volumeIcon 
             anchors.centerIn: parent 
@@ -98,27 +99,56 @@ Rectangle {
             font.pixelSize: 32 * Appearance.scaleFactor 
             color: "white" 
             opacity: maVolume.containsMouse ? 1 : 0 
-            Behavior on opacity { NumberAnimation { duration: 200 } } 
+            scale: 1.0
+
+            transform: Scale {
+                origin.x: volumeIcon.width / 2
+                origin.y: volumeIcon.height / 2
+                xScale: volumeIcon.scale
+                yScale: volumeIcon.scale
+            }
+
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+            Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
         } 
         
+        Timer {
+            id: volumeScaleLoop
+            interval: 400
+            repeat: true
+            running: false
+            onTriggered: {
+                volumeIcon.scale = (volumeIcon.scale > 1.0) ? 1.0 : 1.1
+            }
+        }
+
         MouseArea { 
             id: maVolume 
             anchors.fill: parent 
             hoverEnabled: true 
+
+            onEntered: volumeScaleLoop.start()
+            onExited: {
+                volumeScaleLoop.stop()
+                volumeIcon.scale = 1.0
+            }
+
             onWheel: (wheel) => { 
                 var delta = wheel.angleDelta.y > 0 ? 0.05 : -0.05 
                 node.audio.volume = Math.max(0, Math.min(1, node.audio.volume + delta)) 
             } 
         } 
-    } 
+    }
+
 
     Item { 
         id: brightnessHotCorner 
-        width: 60; 
-        height: 60 
+        width: 60
+        height: 60
         anchors.top: parent.top 
         anchors.right: parent.right 
         z: 2 
+
         Text { 
             id: brightnessIcon 
             anchors.centerIn: parent 
@@ -127,19 +157,47 @@ Rectangle {
             font.pixelSize: 32 * Appearance.scaleFactor 
             color: "white" 
             opacity: maBrightness.containsMouse ? 1 : 0 
-            Behavior on opacity { NumberAnimation { duration: 200 } } 
+            scale: 1.0
+
+            transform: Scale {
+                origin.x: brightnessIcon.width / 2
+                origin.y: brightnessIcon.height / 2
+                xScale: brightnessIcon.scale
+                yScale: brightnessIcon.scale
+            }
+
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+            Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
         } 
-        
+
+        Timer {
+            id: brightnessScaleLoop
+            interval: 400
+            repeat: true
+            running: false
+            onTriggered: {
+                brightnessIcon.scale = (brightnessIcon.scale > 1.0) ? 1.0 : 1.1
+            }
+        }
+
         MouseArea { 
             id: maBrightness 
             anchors.fill: parent 
             hoverEnabled: true 
+
+            onEntered: brightnessScaleLoop.start()
+            onExited: {
+                brightnessScaleLoop.stop()
+                brightnessIcon.scale = 1.0
+            }
+
             onWheel: (wheel) => { 
                 var delta = wheel.angleDelta.y > 0 ? 0.05 : -0.05 
                 brightnessUtil.brightness = Math.max(0, Math.min(1, brightnessUtil.brightness + delta)) 
             } 
         } 
-    } 
+    }
+
 
     Item { 
         anchors.fill: parent 
@@ -218,34 +276,44 @@ Rectangle {
                 radius: 10 
                 color: Appearance.primary 
                 scale: 1.0 
-                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }} 
+
+                // Animasi pulse unik tiap 3 detik
+                SequentialAnimation on scale {
+                    id: pulseAnim
+                    loops: Animation.Infinite
+                    running: !maPower.containsMouse && !maPower.pressed
+                    NumberAnimation { to: 1.2; duration: 250; easing.type: Easing.OutBack }
+                    NumberAnimation { to: 1.0; duration: 250; easing.type: Easing.InBack }
+                    PauseAnimation { duration: 2500 } // jeda 2.5 detik biar total 3 detik siklus
+                }
 
                 Process { 
                     id: powerProc; 
                     command: [] 
                 } 
-            
+
                 MouseArea { 
+                    id: maPower
                     anchors.fill: parent 
                     cursorShape: Qt.PointingHandCursor 
                     hoverEnabled: true 
-                    
-                    onEntered: powerButton.scale = 1.2 
-                    onExited: powerButton.scale = 1.0 
+
+                    onEntered: powerButton.scale = 1.1
+                    onExited: powerButton.scale = 1.0
                     onClicked: { 
                         confirmDialogPower.visible = !confirmDialogPower.visible 
                         confirmDialogReboot.visible = false 
                     } 
                 } 
-            
+
                 Text { 
-                    anchors.centerIn: parent; 
-                    text: "power_settings_new"; 
-                    color: Appearance.color; 
-                    font.family: Appearance.materialSymbols; 
+                    anchors.centerIn: parent
+                    text: "power_settings_new"
+                    color: Appearance.color
+                    font.family: Appearance.materialSymbols
                     font.pixelSize: 20 * Appearance.scaleFactor 
                 } 
-                
+
                 Rectangle { 
                     id: confirmDialogPower 
                     visible: false
@@ -272,8 +340,7 @@ Rectangle {
                         } 
                         
                         Rectangle { 
-                            width: 40
-                            height: 28 
+                            width: 40; height: 28 
                             radius: 6 
                             color: powerButton.color 
                             border.color: Appearance.color 
@@ -303,8 +370,7 @@ Rectangle {
                         } 
                         
                         Rectangle {
-                            width: 40
-                            height: 28
+                            width: 40; height: 28
                             radius: 6 
                             color: powerButton.color 
                             border.color: Appearance.color 
@@ -329,7 +395,7 @@ Rectangle {
                         } 
                     } 
                 } 
-            } 
+            }
         
             Rectangle { 
                 id: rebootButton 
@@ -337,24 +403,64 @@ Rectangle {
                 height: 32 * Appearance.scaleFactor 
                 radius: 10 
                 color: Appearance.color 
-                scale: 1.0 
-                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } } 
-                
+                scale: 1.0
+
+                Behavior on scale { 
+                    NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } 
+                } 
+
                 Process { id: rebootProc; command: [] } 
-                
+
+                Timer {
+                    id: rotateTimer
+                    interval: 3000
+                    repeat: true
+                    running: true
+                    onTriggered: rotationAnim.start()
+                }
+
+                NumberAnimation {
+                    id: rotationAnim
+                    target: rebootIcon
+                    property: "rotation"
+                    from: 0
+                    to: 360
+                    duration: 1200
+                    easing.type: Easing.InOutQuad
+                }
+
                 MouseArea { 
                     anchors.fill: parent 
                     cursorShape: Qt.PointingHandCursor 
                     hoverEnabled: true 
-                    onEntered: rebootButton.scale = 1.2 
-                    onExited: rebootButton.scale = 1.0 
+
+                    onEntered: {
+                        rebootButton.scale = 1.2
+                        rotateTimer.stop()
+                        rotationAnim.stop()
+                    }
+                    onExited: {
+                        rebootButton.scale = 1.0
+                        rotateTimer.start()
+                    }
                     onClicked: { 
                         confirmDialogReboot.visible = !confirmDialogReboot.visible 
                         confirmDialogPower.visible = false 
+                        rotateTimer.stop()
+                        rotationAnim.stop()
                     } 
                 } 
-                Text { anchors.centerIn: parent; text: "restart_alt"; color: Appearance.white; font.family: Appearance.materialSymbols; font.pixelSize: 20 * Appearance.scaleFactor }
-                
+
+                Text { 
+                    id: rebootIcon
+                    anchors.centerIn: parent 
+                    text: "restart_alt" 
+                    color: Appearance.white 
+                    font.family: Appearance.materialSymbols 
+                    font.pixelSize: 20 * Appearance.scaleFactor 
+                    rotation: 0
+                }
+
                 Rectangle { 
                     id: confirmDialogReboot 
                     visible: false 
@@ -365,12 +471,12 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter 
                     anchors.left: parent.right 
                     anchors.leftMargin: 8 
-                    
+
                     RowLayout { 
                         anchors.fill: parent 
                         anchors.margins: 6 
                         spacing: 8 
-                        
+
                         Text { 
                             text: "Reboot?" 
                             color: Appearance.white 
@@ -378,7 +484,7 @@ Rectangle {
                             verticalAlignment: Text.AlignVCenter 
                             font.bold: true 
                         } 
-                        
+
                         Rectangle { 
                             width: 40 
                             height: 28 
@@ -395,7 +501,7 @@ Rectangle {
                                 color: Appearance.white 
                                 font.bold: true 
                             } 
-                            
+
                             MouseArea { 
                                 anchors.fill: parent 
                                 onClicked: { 
@@ -409,7 +515,7 @@ Rectangle {
                                 cursorShape: Qt.PointingHandCursor 
                             } 
                         } 
-                        
+
                         Rectangle { 
                             width: 40 
                             height: 28 
@@ -418,7 +524,7 @@ Rectangle {
                             border.color: Appearance.color 
                             border.width: 1 
                             anchors.verticalCenter: parent.verticalCenter 
-                            
+
                             Text { 
                                 anchors.centerIn: parent 
                                 font.family: Appearance.materialSymbols 
@@ -426,7 +532,7 @@ Rectangle {
                                 color: Appearance.white 
                                 font.bold: true
                             } 
-                            
+
                             MouseArea { 
                                 anchors.fill: parent 
                                 onClicked: confirmDialogReboot.visible = false 
@@ -438,14 +544,44 @@ Rectangle {
                         } 
                     } 
                 } 
-            } 
+            }
         } 
 
         Item { Layout.fillWidth: true } 
 
-        VolumeWidget {} 
-        BluetoothWidget {} 
-        WifiWidget {} 
+        Item {
+            width: 40; height: 40
+            VolumeWidget { anchors.fill: parent }
+
+            SequentialAnimation on scale {
+                loops: Animation.Infinite
+                NumberAnimation { from: 1.0; to: 1.2; duration: 800; easing.type: Easing.InOutQuad }
+                NumberAnimation { from: 1.2; to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
+            }
+        } 
+
+        Item {
+            width: 40; height: 40
+            BluetoothWidget { anchors.fill: parent }
+
+            SequentialAnimation on scale {
+                loops: Animation.Infinite
+                NumberAnimation { from: 1.0; to: 1.2; duration: 900; easing.type: Easing.InOutQuad }
+                NumberAnimation { from: 1.2; to: 1.0; duration: 900; easing.type: Easing.InOutQuad }
+            }
+        }
+
+        Item {
+            width: 40; height: 40
+            WifiWidget { anchors.fill: parent }
+
+            SequentialAnimation on scale {
+                loops: Animation.Infinite
+                NumberAnimation { from: 1.0; to: 1.2; duration: 1000; easing.type: Easing.InOutQuad }
+                NumberAnimation { from: 1.2; to: 1.0; duration: 1000; easing.type: Easing.InOutQuad }
+            }
+        }
+        
         BatteryWidget {} 
         SequentialAnimation { 
             running: true 

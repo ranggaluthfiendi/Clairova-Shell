@@ -24,10 +24,27 @@ Item {
         id: clickArea
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
+        hoverEnabled: true
 
         onClicked: {
             toggled = !toggled
             requestNotifToggle()
+        }
+
+        onEntered: scaleLoop.start()
+        onExited: {
+            scaleLoop.stop()
+            iconText.scale = 1.0
+        }
+    }
+
+    Timer {
+        id: scaleLoop
+        interval: 400
+        repeat: true
+        running: false
+        onTriggered: {
+            iconText.scale = (iconText.scale > 1.0) ? 1.0 : 1.1
         }
     }
 
@@ -38,5 +55,17 @@ Item {
         font.pixelSize: 22 * scaleFactor
         text: "notifications"
         color: Appearance.white
+        scale: 1.0
+
+        transform: Scale {
+            origin.x: iconText.width / 2
+            origin.y: iconText.height / 2
+            xScale: iconText.scale
+            yScale: iconText.scale
+        }
+
+        Behavior on scale {
+            NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+        }
     }
 }

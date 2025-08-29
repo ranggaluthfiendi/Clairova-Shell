@@ -136,20 +136,53 @@ Item {
                     height: 30 * Appearance.scaleFactor
 
                     MouseArea {
+                        id: micArea
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         acceptedButtons: Qt.AllButtons
+                        hoverEnabled: true
+
                         onClicked: if (node && node.audio) node.audio.muted = !node.audio.muted
+
+                        onEntered: scaleLoop.start()
+                        onExited: {
+                            scaleLoop.stop()
+                            micIcon.scale = 1.0
+                        }
+                    }
+
+                    Timer {
+                        id: scaleLoop
+                        interval: 400
+                        repeat: true
+                        running: false
+                        onTriggered: {
+                            micIcon.scale = (micIcon.scale > 1.0) ? 1.0 : 1.1
+                        }
                     }
 
                     Text {
+                        id: micIcon
                         anchors.centerIn: parent
                         text: (!node || !node.audio || node.audio.muted || node.audio.volume === 0) ? "mic_off" : "mic"
                         font.family: Appearance.materialSymbols
                         font.pixelSize: 14 * Appearance.scaleFactor
                         color: Appearance.white
+                        scale: 1.0
+
+                        transform: Scale {
+                            origin.x: micIcon.width / 2
+                            origin.y: micIcon.height / 2
+                            xScale: micIcon.scale
+                            yScale: micIcon.scale
+                        }
+
+                        Behavior on scale {
+                            NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                        }
                     }
                 }
+
             }
         }
 
