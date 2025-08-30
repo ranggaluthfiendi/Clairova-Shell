@@ -45,7 +45,7 @@ Item {
     }
 
     function mediaTitle() {
-        return currentPlayer ? (currentPlayer.trackTitle || "No Media Found") : "No Media Found"
+        return currentPlayer ? (currentPlayer.trackTitle || "No media Found") : "No media Found"
     }
 
     function mediaArtist() {
@@ -242,7 +242,7 @@ Item {
             Column {
 
                 Text {
-                    text: currentPlayer && currentPlayer.playbackState ? currentPlayer.identity : ""
+                    text: currentPlayer && currentPlayer.playbackState ? currentPlayer.identity : "Play some music!"
                     color: Appearance.white
                     font.pixelSize: 12 * Appearance.scaleFactor
                 }
