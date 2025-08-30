@@ -38,7 +38,7 @@ Rectangle {
     
     MediaCoverUtil {
         id: coverUtil
-        trackArtUrl: currentPlayer.trackArtUrl
+        trackArtUrl: currentPlayer ? currentPlayer.trackArtUrl : ""
     }
 
     property MprisPlayer currentPlayer: Mpris.players.values.length > 0 ? Mpris.players.values[0] : null

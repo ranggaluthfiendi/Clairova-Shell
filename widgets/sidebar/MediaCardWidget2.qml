@@ -17,7 +17,7 @@ Item {
 
     MediaCoverUtil {
         id: coverUtil
-        trackArtUrl: currentPlayer.trackArtUrl
+        trackArtUrl: currentPlayer ? currentPlayer.trackArtUrl : ""
     }
 
     width: parent ? parent.width : 360
@@ -67,14 +67,9 @@ Item {
         return mm + ":" + ss;
     }
 
-    Timer {
-        // only emit the signal when the position is actually changing.
-        running: currentPlayer.playbackState == MprisPlaybackState.Playing
-        // Make sure the position updates at least once per second.
-        interval: 1000
-        repeat: true
-        // emit the positionChanged signal every second.
-        onTriggered: currentPlayer.positionChanged()
+    FrameAnimation {
+        running: currentPlayer && currentPlayer.playbackState == MprisPlaybackState.Playing
+        onTriggered: if(currentPlayer) currentPlayer.positionChanged()
     }
 
     Column {
@@ -202,7 +197,7 @@ Item {
                         Connections {
                             target: mediaUtil
                             function onStatusChanged() {
-                                if (currentPlayer.isPlaying) {
+                                if (currentPlayer && currentPlayer.isPlaying) {
                                     returnToZero.stop()
                                     loopTimer.running = true
                                 } else {
@@ -247,7 +242,7 @@ Item {
             Column {
 
                 Text {
-                    text: currentPlayer.identity
+                    text: currentPlayer && currentPlayer.playbackState ? currentPlayer.identity : ""
                     color: Appearance.white
                     font.pixelSize: 12 * Appearance.scaleFactor
                 }
