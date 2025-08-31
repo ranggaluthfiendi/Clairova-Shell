@@ -26,6 +26,15 @@ Wallpapers: [Lecter3D |
 
 Requirements to install:
 
+```
+sudo pacman -S \
+    networkmanager nm-applet gnome-keyring seahorse \
+    swww dbus xdg-desktop-portal xdg-desktop-portal-hyprland snixembed \
+    bluez bluez-utils brightnessctl playerctl
+
+yay -S bluez
+```
+
 Playerctl - [Install here](https://archlinux.org/packages/extra/x86_64/playerctl/)
 
 Brightnessctl - [Install here](https://archlinux.org/packages/extra/x86_64/brightnessctl/)

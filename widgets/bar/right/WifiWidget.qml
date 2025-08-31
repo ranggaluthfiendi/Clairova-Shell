@@ -29,10 +29,14 @@ Item {
         id: clickArea
         anchors.fill: parent
         hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        onClicked: {
-            wifiWidget.toggled = !wifiWidget.toggled
-            wifiWidget.requestSidebarToggle()
+        onClicked: (mouse) => {
+            if (mouse.button === Qt.LeftButton) {
+                wifiUtils.toggle() // klik kiri toggle WiFi
+            } else if (mouse.button === Qt.RightButton) {
+                wifiProcess.running = true // klik kanan buka nm-connection-editor
+            }
         }
     }
 

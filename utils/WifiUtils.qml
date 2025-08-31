@@ -13,10 +13,17 @@ Item {
 
     function toggle() {
         userToggled = true
-        toggleProc.command = ["sh", "-c", enabled ? "nmcli radio wifi off" : "nmcli radio wifi on"]
+        if (enabled) {
+            // Kalau lagi nyala → matikan
+            toggleProc.command = ["sh", "-c", "nmcli radio wifi off"]
+        } else {
+            // Kalau mati → nyalakan dan coba reconnect ke last-known network
+            toggleProc.command = ["sh", "-c", "nmcli radio wifi on && nmcli connection up id '" + networkName + "' || nmcli device wifi connect '" + networkName + "'"]
+        }
         toggleProc.running = true
         if (debug) console.log("[WifiUtils] Toggle WiFi:", toggleProc.command.join(" "))
     }
+
 
     Process {
         id: signalProc
