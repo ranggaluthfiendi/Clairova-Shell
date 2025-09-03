@@ -168,7 +168,7 @@ Item {
         stdout: StdioCollector {
             onTextChanged: {
                 if (text.trim().endsWith("done")) {
-                    coverSource = imagePath + "?v=" + Math.random().toString(36).substr(2,8)
+                    coverSource = imagePath
                     mediaLoaded(title, artist, coverSource)
                 }
             }
