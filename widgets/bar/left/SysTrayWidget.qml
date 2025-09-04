@@ -39,16 +39,47 @@ Item {
                     height: 16 * Appearance.scaleFactor
                     fillMode: Image.PreserveAspectFit
                     smooth: true
+                    scale: 1.0
+
+                    transform: Scale {
+                        origin.x: icon.width / 2
+                        origin.y: icon.height / 2
+                        xScale: icon.scale
+                        yScale: icon.scale
+                    }
+
+                    Behavior on scale {
+                        NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                    }
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+
+                    Timer {
+                        id: iconScaleLoop
+                        interval: 400
+                        repeat: true
+                        running: false
+                        onTriggered: {
+                            icon.scale = (icon.scale > 1.0) ? 1.0 : 1.1
+                        }
+                    }
+
+                    onEntered: iconScaleLoop.start()
+                    onExited: {
+                        iconScaleLoop.stop()
+                        icon.scale = 1.0
+                    }
+
                     onClicked: {
-                        if (!menu.visible) menu.open();
-                        else menu.close();
+                        if (!menu.visible) menu.open()
+                        else menu.close()
                     }
                 }
+
                 QsMenuAnchor {
                     id: menu
                     anchor.item: icon
