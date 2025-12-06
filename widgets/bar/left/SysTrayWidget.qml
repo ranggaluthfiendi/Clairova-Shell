@@ -29,12 +29,12 @@ Item {
         if (currentPulseIcon && currentPulseIcon !== iconObj)
             currentPulseIcon.stopPulse()
         currentPulseIcon = iconObj
-        iconObj.startPulse()
+        if (iconObj && iconObj.startPulse) iconObj.startPulse()
     }
 
     function pulseStop(iconObj) {
         if (currentPulseIcon === iconObj) {
-            iconObj.stopPulse()
+            if (iconObj && iconObj.stopPulse) iconObj.stopPulse()
             currentPulseIcon = null
         }
     }
@@ -48,6 +48,7 @@ Item {
 
             Rectangle {
                 required property SystemTrayItem modelData
+
                 width: 28 * Appearance.scaleFactor
                 height: 28 * Appearance.scaleFactor
                 radius: 6 * Appearance.scaleFactor
@@ -55,21 +56,23 @@ Item {
                 property bool hovered: false
                 property bool pressed: false
                 property bool active: root.currentMainMenu === customMenu
+                property bool invalidIcon: !modelData
 
-                color: active
-                    ? Qt.rgba(Appearance.background.r, Appearance.background.g, Appearance.background.b, 0.6)
-                    : pressed
-                        ? Qt.rgba(Appearance.color.r, Appearance.color.g, Appearance.color.b, 0.8)
-                        : hovered
-                            ? Qt.rgba(Appearance.background.r, Appearance.background.g, Appearance.background.b, 0.4)
-                            : "transparent"
+                color: invalidIcon ? "transparent" :
+                       active
+                        ? Qt.rgba(Appearance.background.r, Appearance.background.g, Appearance.background.b, 0.6)
+                        : pressed
+                            ? Qt.rgba(Appearance.color.r, Appearance.color.g, Appearance.color.b, 0.8)
+                            : hovered
+                                ? Qt.rgba(Appearance.background.r, Appearance.background.g, Appearance.background.b, 0.4)
+                                : "transparent"
 
                 border.color: (active || hovered) ? Appearance.white : "transparent"
 
                 Image {
                     id: icon
                     anchors.centerIn: parent
-                    source: modelData.icon
+                    source: invalidIcon ? "" : (modelData.icon || "")
                     width: 16 * Appearance.scaleFactor
                     height: 16 * Appearance.scaleFactor
                     fillMode: Image.PreserveAspectFit
@@ -98,6 +101,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
 
                     onEntered: {
                         parent.hovered = true
@@ -128,17 +132,16 @@ Item {
                     }
                 }
 
-                QsMenuOpener { id: opener; menu: modelData.menu }
+                QsMenuOpener { id: opener; menu: modelData ? modelData.menu : null }
 
                 PopupWindow {
                     id: customMenu
                     visible: false
                     color: "transparent"
-                    width: 180 * Appearance.scaleFactor
-                    height: menuColumn.implicitHeight + 20 * Appearance.scaleFactor
+                    implicitWidth: 180 * Appearance.scaleFactor
+                    implicitHeight: menuColumn.implicitHeight + 20 * Appearance.scaleFactor
                     anchor.item: icon
-                    anchor.edges: root.edges
-                    anchor.gravity: root.gravity
+
                     anchor.margins.top: 12 * Appearance.scaleFactor
 
                     Rectangle {
@@ -150,21 +153,26 @@ Item {
 
                         Column {
                             id: menuColumn
-                            width: parent.width
+                            width: parent ? parent.width : (180 * Appearance.scaleFactor)
                             spacing: 2
                             padding: 4
 
                             Repeater {
-                                model: opener.children
+                                model: opener ? opener.children : []
 
                                 delegate: Item {
                                     required property QsMenuEntry modelData
-                                    width: parent.width
-                                    height: modelData.isSeparator ? 8 : 26
+                                    property bool invalid: modelData === null || modelData === undefined
+
+                                    
+                                    property real delegateWidth: parent ? parent.width : (180 * Appearance.scaleFactor)
+                                    width: delegateWidth
+                                    height: invalid ? 0 : (modelData.isSeparator ? 8 : 26)
+                                    visible: !invalid
 
                                     Rectangle {
-                                        visible: modelData.isSeparator
-                                        width: parent.width - 10
+                                        visible: !invalid && modelData.isSeparator
+                                        width: delegateWidth - 10
                                         height: 1
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         color: "#444"
@@ -172,7 +180,7 @@ Item {
 
                                     Rectangle {
                                         id: entryRect
-                                        visible: !modelData.isSeparator
+                                        visible: !invalid && !modelData.isSeparator
                                         anchors.fill: parent
                                         anchors.rightMargin: 8
                                         color: hoverArea.containsMouse
@@ -184,34 +192,47 @@ Item {
                                             anchors.verticalCenter: parent.verticalCenter
                                             anchors.leftMargin: 10
                                             anchors.left: parent.left
-                                            text: modelData.text
-                                            color: modelData.enabled ? "white" : "#666"
+                                            text: invalid ? "" : (modelData.text || "")
+                                            color: invalid ? "white" : (modelData.enabled ? "white" : "#666")
+                                            elide: Text.ElideRight
                                         }
 
                                         MouseArea {
                                             id: hoverArea
                                             anchors.fill: parent
                                             hoverEnabled: true
-
-                                            onEntered: {
-                                                if (subLoader.item)
-                                                    subLoader.item.openAt(entryRect)
-                                            }
+                                            cursorShape: Qt.PointingHandCursor
 
                                             onClicked: {
-                                                if (!modelData.hasChildren) {
-                                                    modelData.triggered()
+                                                if (invalid) return;
+
+                                                if (modelData.hasChildren) {
+
+                                                    if (subLoader.item && subLoader.item.visible) {
+                                                        subLoader.item.visible = false;
+                                                        return;
+                                                    }
+
+                                                    if (subLoader.item)
+                                                        subLoader.item.openAt(entryRect);
+
+                                                } else {
+                                                    try { modelData.triggered() } catch(e) {}
                                                     customMenu.visible = false
-                                                } else if (subLoader.item)
-                                                    subLoader.item.openAt(entryRect)
+                                                }
                                             }
+
                                         }
                                     }
 
                                     Loader {
                                         id: subLoader
-                                        sourceComponent: modelData.hasChildren ? subPopupComp : null
-                                        onLoaded: if (item) item.qsmenu = modelData
+                                        sourceComponent: (!invalid && modelData.hasChildren) ? subPopupComp : null
+                                        onLoaded: {
+                                            if (item) {
+                                                try { item.qsmenu = modelData } catch(e) {}
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -240,7 +261,10 @@ Item {
                 anchor.item = item
                 anchor.edges = Edges.Left
                 anchor.gravity = Edges.Right
-                anchor.margins.left = item.width + 8 * Appearance.scaleFactor
+
+                var itemWidth = (item && typeof item.width === "number") ? item.width : (100 * Appearance.scaleFactor)
+                anchor.margins.left = itemWidth + 8 * Appearance.scaleFactor
+                anchor.margins.top = 24 * Appearance.scaleFactor
                 visible = true
             }
 
@@ -260,21 +284,25 @@ Item {
 
                 Column {
                     id: column
-                    width: parent.width
+                    width: parent ? parent.width : (180 * Appearance.scaleFactor)
                     spacing: 2
                     padding: 4
 
                     Repeater {
-                        model: subOpener.children
+                        model: subOpener ? subOpener.children : []
 
                         delegate: Item {
                             required property QsMenuEntry modelData
-                            width: parent.width
-                            height: modelData.isSeparator ? 8 : 26
+                            property bool invalid: modelData === null || modelData === undefined
+
+                            property real delegateWidth: parent ? parent.width : (180 * Appearance.scaleFactor)
+                            width: delegateWidth
+                            height: invalid ? 0 : (modelData.isSeparator ? 8 : 26)
+                            visible: !invalid
 
                             Rectangle {
-                                visible: modelData.isSeparator
-                                width: parent.width - 10
+                                visible: !invalid && modelData.isSeparator
+                                width: delegateWidth - 10
                                 height: 1
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 color: "#444"
@@ -283,26 +311,30 @@ Item {
                             Rectangle {
                                 anchors.fill: parent
                                 anchors.rightMargin: 8
+                                radius: 5
                                 color: hover.containsMouse
                                     ? Qt.rgba(Appearance.color.r, Appearance.color.g, Appearance.color.b, 0.25)
                                     : "transparent"
-                                radius: 5
 
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.leftMargin: 10
                                     anchors.left: parent.left
-                                    text: modelData.text
-                                    color: modelData.enabled ? "white" : "#666"
+                                    text: invalid ? "" : (modelData.text || "")
+                                    color: invalid ? "white" : (modelData.enabled ? "white" : "#666")
+                                    elide: Text.ElideRight
                                 }
 
                                 MouseArea {
                                     id: hover
                                     anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
                                     hoverEnabled: true
                                     onClicked: {
-                                        modelData.triggered()
-                                        subPopup.visible = false
+                                        if (!invalid) {
+                                            try { modelData.triggered() } catch(e) {}
+                                            subPopup.visible = false
+                                        }
                                     }
                                 }
                             }
